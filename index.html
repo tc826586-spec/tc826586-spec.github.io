@@ -2,63 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tanish Games | Buy & Sell Games</title>
+  <title>Tanish Games</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
+<header class="navbar">
   <h1>Tanish Games</h1>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#games">Games</a>
+    <a href="#feedback">Feedback</a>
+  </nav>
 </header>
 
+<!-- HERO -->
 <section class="hero">
-  <h2>Buy & Sell Games Online</h2>
-  <p>Fast, secure & trusted gaming marketplace in India</p>
+  <div class="hero-text">
+    <h2>Buy & Sell Games Online</h2>
+    <p>Fast • Secure • Trusted Gaming Marketplace</p>
+    <a class="btn">Browse Games</a>
+  </div>
+  <img src="images/hero.jpg" class="hero-img">
 </section>
 
-<!-- POPULAR GAMES -->
+<!-- GAMES -->
 <section id="games">
   <h2 class="section-title">Popular Games</h2>
 
-  <div class="games-container">
-
+  <div class="game-grid">
     <div class="game-card">
-      <img src="images/gta.jpg" alt="GTA V" class="game-img">
+      <img src="images/gta.jpg">
       <h3>GTA V</h3>
       <p>₹999</p>
-      <a class="btn" href="https://wa.me/919876543210">Buy on WhatsApp</a>
+      <a class="btn small">Buy on WhatsApp</a>
     </div>
 
     <div class="game-card">
-      <img src="images/cod.jpg" alt="Call of Duty" class="game-img">
+      <img src="images/cod.jpg">
       <h3>Call of Duty</h3>
       <p>₹799</p>
-      <a class="btn" href="https://wa.me/919876543210">Buy on WhatsApp</a>
+      <a class="btn small">Buy on WhatsApp</a>
     </div>
 
     <div class="game-card">
-      <img src="images/minecraft.jpg" alt="Minecraft" class="game-img">
+      <img src="images/minecraft.jpg">
       <h3>Minecraft</h3>
       <p>₹499</p>
-      <a class="btn" href="https://wa.me/919876543210">Buy on WhatsApp</a>
+      <a class="btn small">Buy on WhatsApp</a>
     </div>
+  </div>
+</section>
 
+<!-- PAYMENTS -->
+<section class="payments">
+  <h2>Payment Methods</h2>
+  <div class="pay-icons">
+    <img src="images/gpay.png">
+    <img src="images/phonepe.png">
+    <img src="images/paytm.png">
   </div>
 </section>
 
 <!-- FEEDBACK -->
-<section class="feedback">
+<section id="feedback" class="feedback">
   <h2>Feedback</h2>
   <form>
-    <input type="text" placeholder="Your Name" required>
-    <input type="email" placeholder="Your Email" required>
-    <textarea placeholder="Your Feedback" required></textarea>
-    <button type="submit">Submit</button>
+    <input type="text" placeholder="Name" required>
+    <input type="email" placeholder="Email" required>
+    <textarea placeholder="Your feedback"></textarea>
+    <button class="btn">Submit</button>
   </form>
 </section>
 
 <footer>
-  <p>© 2025 Tanish Games</p>
+  © 2025 Tanish Games
 </footer>
 
 </body>
