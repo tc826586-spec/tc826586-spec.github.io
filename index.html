@@ -1,89 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tanish Games | Buy & Sell Games Online</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanish Games</title>
 
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#020617,#1e3a8a);
+  color: white;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+nav a {
+  color: white;
+  margin-left: 20px;
+  text-decoration: none;
+}
+
+.hero {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.btn {
+  background: #2563eb;
+  padding: 12px 25px;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+  gap: 20px;
+  padding: 40px;
+}
+
+.feature-card {
+  background: white;
+  color: black;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.feature-card i {
+  font-size: 30px;
+  padding: 15px;
+  border-radius: 50%;
+  color: white;
+}
+
+.blue i { background:#2563eb; }
+.green i { background:#22c55e; }
+.whatsapp i { background:#25d366; }
+
+.games {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+  gap: 20px;
+  padding: 40px;
+}
+
+.game-card {
+  background: white;
+  color: black;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.game-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.payments, .feedback {
+  text-align: center;
+  padding: 40px;
+}
+
+.payment-icons i {
+  font-size: 40px;
+  margin: 15px;
+}
+
+.feedback input, .feedback textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: none;
+}
+
+.feedback button {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  border: none;
+  color: white;
+  border-radius: 8px;
+}
+</style>
 </head>
+
 <body>
 
 <header>
-  <h2>Tanish Games</h2>
-  <nav>
-    <a href="#features">Features</a>
-    <a href="#games">Games</a>
-    <a href="#contact">Contact</a>
-  </nav>
+<h2>Tanish Games</h2>
+<nav>
+<a href="#">Features</a>
+<a href="#">Games</a>
+<a href="#">Contact</a>
+</nav>
 </header>
 
-<!-- HERO -->
 <section class="hero">
-  <h1>Buy & Sell Games Online</h1>
-  <p>Fast, secure & trusted gaming marketplace in India</p>
-  <a href="#games" class="btn">Browse Games</a>
+<h1>Buy & Sell Games Online</h1>
+<p>Fast, secure & trusted gaming marketplace in India</p>
+<a class="btn" href="#games">Browse Games</a>
 </section>
 
-<!-- FEATURES -->
-<section id="features">
-  <h2>Why Choose Us</h2>
-  <div class="features">
-    <div class="card">Fast & Secure Payments</div>
-    <div class="card">Instant Delivery</div>
-    <div class="card">24/7 WhatsApp Support</div>
-  </div>
+<section class="features">
+<div class="feature-card blue"><i class="fa-solid fa-lock"></i><p>Secure Payments</p></div>
+<div class="feature-card green"><i class="fa-solid fa-bolt"></i><p>Instant Delivery</p></div>
+<div class="feature-card whatsapp"><i class="fa-brands fa-whatsapp"></i><p>24/7 Support</p></div>
 </section>
 
-<!-- GAMES -->
-<section id="games">
-  <h2>Popular Games</h2>
-  <div class="games">
+<section class="games" id="games">
+<div class="game-card">
+<img src="gta.jpg">
+<h3>GTA V</h3><p>₹999</p>
+<a class="btn" href="https://wa.me/919876543210">Buy on WhatsApp</a>
+</div>
 
-    <div class="card">
-      <img src="gta.jpg" alt="GTA V">
-      <h3>GTA V</h3>
-      <p>₹999</p>
-      <a class="btn" href="https://wa.me/919876543210?text=I want to buy GTA V">Buy on WhatsApp</a>
-      <a class="pay" href="https://rzp.io/l/YOUR_RAZORPAY_LINK">Pay Now</a>
-    </div>
+<div class="game-card">
+<img src="cod.jpg">
+<h3>Call of Duty</h3><p>₹799</p>
+<a class="btn" href="https://wa.me/919876543210">Buy on WhatsApp</a>
+</div>
 
-    <div class="card">
-      <img src="cod.jpg" alt="Call of Duty">
-      <h3>Call of Duty</h3>
-      <p>₹799</p>
-      <a class="btn" href="https://wa.me/919876543210?text=I want to buy Call of Duty">Buy on WhatsApp</a>
-      <a class="pay" href="https://rzp.io/l/YOUR_RAZORPAY_LINK">Pay Now</a>
-    </div>
-
-    <div class="card">
-      <img src="minecraft.jpg" alt="Minecraft">
-      <h3>Minecraft</h3>
-      <p>₹499</p>
-      <a class="btn" href="https://wa.me/919876543210?text=I want to buy Minecraft">Buy on WhatsApp</a>
-      <a class="pay" href="https://rzp.io/l/YOUR_RAZORPAY_LINK">Pay Now</a>
-    </div>
-
-  </div>
+<div class="game-card">
+<img src="minecraft.jpg">
+<h3>Minecraft</h3><p>₹499</p>
+<a class="btn" href="https://wa.me/919876543210">Buy on WhatsApp</a>
+</div>
 </section>
 
-<!-- CONTACT -->
-<section id="contact">
-  <h2>Contact Us</h2>
-  <form>
-    <input type="text" placeholder="Your Name" required>
-    <input type="email" placeholder="Your Email" required>
-    <textarea placeholder="Your Message"></textarea>
-    <button type="submit">Send Message</button>
-  </form>
-
-  <p>Email: support@tanishgames.com</p>
-  <p>WhatsApp: +91 9876543210</p>
+<section class="payments">
+<h2>Payment Methods</h2>
+<div class="payment-icons">
+<i class="fa-brands fa-google-pay"></i>
+<i class="fa-brands fa-cc-visa"></i>
+<i class="fa-brands fa-cc-mastercard"></i>
+<i class="fa-solid fa-qrcode"></i>
+</div>
 </section>
 
-<footer>
-  © 2025 Tanish Games. All Rights Reserved.
-</footer>
+<section class="feedback">
+<h2>Feedback</h2>
+<form>
+<input placeholder="Name">
+<input placeholder="Email">
+<textarea placeholder="Feedback"></textarea>
+<button>Submit</button>
+</form>
+</section>
 
 </body>
 </html>
