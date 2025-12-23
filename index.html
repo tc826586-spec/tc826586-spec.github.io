@@ -5,26 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gaming Hub</title>
 
+<!-- Google AdSense -->
+<script async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+  crossorigin="anonymous"></script>
+
+<!-- Razorpay -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <style>
 body{
   margin:0;
   font-family:Segoe UI,Arial;
-  background:radial-gradient(circle at top,#0f172a,#020617);
-  color:white;
+  background:radial-gradient(circle at top,#0b1220,#020617);
+  color:#fff;
 }
 header{
   background:#020617;
-  padding:15px 30px;
+  padding:16px 30px;
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
 nav a{
-  color:white;
-  margin-left:20px;
+  color:#fff;
   text-decoration:none;
+  margin-left:20px;
   font-weight:600;
 }
 .container{
@@ -38,7 +44,7 @@ nav a{
 }
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:20px;
 }
 .card{
@@ -46,22 +52,24 @@ nav a{
   padding:20px;
   border-radius:14px;
   text-align:center;
-  box-shadow:0 10px 30px #0006;
+  box-shadow:0 10px 30px #0007;
 }
 .card img{
-  width:70px;
+  width:64px;
+  margin-bottom:10px;
 }
 button{
   background:#0ea5e9;
   border:none;
   padding:10px 20px;
   border-radius:8px;
-  color:white;
+  color:#fff;
   cursor:pointer;
   font-weight:600;
 }
+button:hover{opacity:.9}
 canvas{
-  background:black;
+  background:#000;
   border-radius:10px;
   display:block;
   margin:auto;
@@ -77,18 +85,34 @@ footer{
   padding:20px;
   opacity:.7;
 }
+.ad-box{
+  max-width:1000px;
+  margin:30px auto;
+  text-align:center;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h2>🎮 Gaming Hub</h2>
-<nav>
-<a href="#free">Play</a>
-<a href="#buy">Buy</a>
-</nav>
+  <h2>🎮 Gaming Hub</h2>
+  <nav>
+    <a href="#free">Play</a>
+    <a href="#buy">Buy</a>
+  </nav>
 </header>
+
+<!-- 🔝 TOP BANNER AD -->
+<div class="ad-box">
+  <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+    data-ad-slot="1111111111"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 
 <div class="container">
 
@@ -139,22 +163,43 @@ footer{
 
 </div>
 
-<div id="gameArea" style="margin-top:40px;text-align:center;"></div>
+<!-- 🟨 MID CONTENT AD -->
+<div class="ad-box">
+  <ins class="adsbygoogle"
+    style="display:inline-block;width:300px;height:250px"
+    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+    data-ad-slot="2222222222"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<!-- GAME AREA (NO ADS HERE – POLICY SAFE) -->
+<div id="gameArea" style="margin-top:30px;text-align:center;"></div>
 
 <h2 id="buy" class="section-title">🛒 Buy Premium Games</h2>
 <div class="grid">
-<div class="card">
-<h3>Premium Racing</h3>
-<p>₹199</p>
-<button onclick="pay()">Buy</button>
-</div>
-<div class="card">
-<h3>Pro Shooter</h3>
-<p>₹299</p>
-<button onclick="pay()">Buy</button>
-</div>
+  <div class="card">
+    <h3>Premium Racing</h3>
+    <p>₹199</p>
+    <button onclick="pay()">Buy</button>
+  </div>
+  <div class="card">
+    <h3>Pro Shooter</h3>
+    <p>₹299</p>
+    <button onclick="pay()">Buy</button>
+  </div>
 </div>
 
+</div>
+
+<!-- 🔻 FOOTER AD -->
+<div class="ad-box">
+  <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+    data-ad-slot="3333333333"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <footer>© 2025 Gaming Hub</footer>
@@ -163,32 +208,21 @@ footer{
 function openGame(game){
   const g=document.getElementById("gameArea");
 
-  if(game==="ttt")
-    g.innerHTML='<iframe src="https://playtictactoe.org/" width="100%" height="400"></iframe>';
-
-  if(game==="2048")
-    g.innerHTML='<iframe src="https://play2048.co/" width="100%" height="500"></iframe>';
-
-  if(game==="flappy")
-    g.innerHTML='<iframe src="https://flappybird.io/" width="100%" height="500"></iframe>';
-
-  if(game==="memory")
-    g.innerHTML='<iframe src="https://www.memozor.com/memory-games/for-adults/online/free" width="100%" height="500"></iframe>';
-
-  if(game==="rps")
-    g.innerHTML='<iframe src="https://www.rpsgame.org/" width="100%" height="400"></iframe>';
-
-  if(game==="mole")
-    g.innerHTML='<iframe src="https://plays.org/game/whack-a-mole/" width="100%" height="400"></iframe>';
+  if(game==="ttt") g.innerHTML='<iframe src="https://playtictactoe.org/" width="100%" height="400"></iframe>';
+  if(game==="2048") g.innerHTML='<iframe src="https://play2048.co/" width="100%" height="500"></iframe>';
+  if(game==="flappy") g.innerHTML='<iframe src="https://flappybird.io/" width="100%" height="500"></iframe>';
+  if(game==="memory") g.innerHTML='<iframe src="https://www.memozor.com/memory-games/for-adults/online/free" width="100%" height="500"></iframe>';
+  if(game==="rps") g.innerHTML='<iframe src="https://www.rpsgame.org/" width="100%" height="400"></iframe>';
+  if(game==="mole") g.innerHTML='<iframe src="https://plays.org/game/whack-a-mole/" width="100%" height="400"></iframe>';
 
   if(game==="snake"){
     g.innerHTML=`
     <canvas id="snake" width="300" height="300"></canvas>
     <div class="controls">
-    <button onclick="dir='up'">⬆</button>
-    <button onclick="dir='left'">⬅</button>
-    <button onclick="dir='right'">➡</button>
-    <button onclick="dir='down'">⬇</button>
+      <button onclick="dir='up'">⬆</button>
+      <button onclick="dir='left'">⬅</button>
+      <button onclick="dir='right'">➡</button>
+      <button onclick="dir='down'">⬇</button>
     </div>`;
     startSnake();
   }
