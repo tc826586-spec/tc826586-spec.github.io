@@ -7,12 +7,10 @@
 </head>
 <body>
 
-<header class="navbar">
+<header>
   <h1>Gaming Hub</h1>
   <nav>
-    <a href="#">Home</a>
-    <a href="#games">Games</a>
-    <a href="#feedback">Feedback</a>
+    Home | Games | Feedback
   </nav>
 </header>
 
@@ -22,40 +20,36 @@
   <button>Browse Games</button>
 </section>
 
-<section id="games" class="games">
-  <h2>Popular Games</h2>
+<h2 style="text-align:center;">Popular Games</h2>
 
-  <div class="game-cards">
+<section class="games">
+  <div class="card">
+    <img src="images/gta.jpg" alt="GTA V">
+    <h3>GTA V</h3>
+    <p>₹999</p>
+    <button>Buy on WhatsApp</button>
+  </div>
 
-    <div class="game-card">
-      <img src="images/gta5.jpg" alt="GTA V">
-      <h3>GTA V</h3>
-      <p>₹999</p>
-      <a class="btn" href="https://wa.me/91XXXXXXXXXX">Buy on WhatsApp</a>
-    </div>
+  <div class="card">
+    <img src="images/cod.jpg" alt="Call of Duty">
+    <h3>Call of Duty</h3>
+    <p>₹799</p>
+    <button>Buy on WhatsApp</button>
+  </div>
 
-    <div class="game-card">
-      <img src="images/cod.jpg" alt="Call of Duty">
-      <h3>Call of Duty</h3>
-      <p>₹799</p>
-      <a class="btn" href="https://wa.me/91XXXXXXXXXX">Buy on WhatsApp</a>
-    </div>
-
-    <div class="game-card">
-      <img src="images/minecraft.jpg" alt="Minecraft">
-      <h3>Minecraft</h3>
-      <p>₹499</p>
-      <a class="btn" href="https://wa.me/91XXXXXXXXXX">Buy on WhatsApp</a>
-    </div>
-
+  <div class="card">
+    <img src="images/minecraft.jpg" alt="Minecraft">
+    <h3>Minecraft</h3>
+    <p>₹499</p>
+    <button>Buy on WhatsApp</button>
   </div>
 </section>
 
-<section id="feedback" class="feedback">
+<section class="feedback">
   <h2>Feedback</h2>
-  <input type="text" placeholder="Your Name">
-  <input type="email" placeholder="Your Email">
-  <textarea placeholder="Your Message"></textarea>
+  <input type="text" placeholder="Your Name"><br>
+  <input type="email" placeholder="Your Email"><br>
+  <textarea placeholder="Your Message"></textarea><br>
   <button>Submit</button>
 </section>
 
