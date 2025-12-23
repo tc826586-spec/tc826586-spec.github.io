@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tic Tac Toe</title>
+<style>
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  gap: 10px;
+  justify-content: center;
+  margin-top: 40px;
+}
+.cell {
+  width: 100px;
+  height: 100px;
+  font-size: 40px;
+  background: #1e293b;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>Tic Tac Toe</h1>
+
+<div class="board" id="board"></div>
+
+<script>
+let board = Array(9).fill("");
+let current = "X";
+
+const boardDiv = document.getElementById("board");
+
+board.forEach((_, i) => {
+  const cell = document.createElement("button");
+  cell.className = "cell";
+  cell.onclick = () => {
+    if (!board[i]) {
+      board[i] = current;
+      cell.innerText = current;
+      current = current === "X" ? "O" : "X";
+    }
+  };
+  boardDiv.appendChild(cell);
+});
+</script>
+
+</body>
+</html>
