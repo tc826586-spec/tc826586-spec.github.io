@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tic Tac Toe</title>
+  <style>
+    body { text-align:center; font-family:Arial; background:#111; color:white }
+    button { width:80px; height:80px; font-size:30px; margin:5px }
+  </style>
+</head>
+<body>
+
+<h1>Snack </h1>
+
+<div id="board"></div>
+
+<script>
+let turn = "X";
+const board = document.getElementById("board");
+
+for(let i=0;i<9;i++){
+  const btn = document.createElement("button");
+  btn.onclick = () => {
+    if(btn.innerText===""){
+      btn.innerText = turn;
+      turn = turn==="X" ? "O" : "X";
+    }
+  };
+  board.appendChild(btn);
+}
+</script>
+
+</body>
+</html>
