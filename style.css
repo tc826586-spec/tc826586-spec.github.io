@@ -7,27 +7,33 @@
 
 body {
   min-height: 100vh;
-  background-image: url("images/bg.png");
-  background-repeat: no-repeat;
-  background-position: center;
+  background: url("images/background.png") no-repeat center center fixed;
   background-size: cover;
   color: white;
 }
 
-/* Header */
-header {
-  padding: 20px 40px;
+/* NAVBAR */
+.navbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  padding: 20px 40px;
+  background: rgba(0,0,0,0.6);
 }
 
-/* Hero */
+.navbar a {
+  color: white;
+  margin-left: 20px;
+  text-decoration: none;
+}
+
+/* HERO */
 .hero {
-  padding: 60px 40px;
+  padding: 80px 40px;
+  background: rgba(0,0,0,0.5);
 }
 
 .hero button {
+  margin-top: 15px;
   padding: 10px 20px;
   background: #5865f2;
   border: none;
@@ -36,20 +42,25 @@ header {
   cursor: pointer;
 }
 
-/* Games */
+/* SECTION */
+.section {
+  padding: 60px 40px;
+  text-align: center;
+}
+
+/* GAME CARDS */
 .games {
   display: flex;
   justify-content: center;
   gap: 30px;
-  padding: 60px 0;
+  margin-top: 30px;
 }
 
 .card {
-  background: rgba(0, 0, 0, 0.6);
   width: 220px;
   padding: 20px;
-  border-radius: 12px;
-  text-align: center;
+  background: rgba(0,0,0,0.65);
+  border-radius: 15px;
   backdrop-filter: blur(8px);
 }
 
@@ -61,25 +72,36 @@ header {
 }
 
 .card button {
+  margin-top: 10px;
+  padding: 8px;
   background: #5865f2;
   border: none;
-  padding: 8px 12px;
   color: white;
   border-radius: 6px;
   cursor: pointer;
 }
 
-/* Feedback */
+/* FEEDBACK */
 .feedback {
   padding: 60px;
+  background: rgba(0,0,0,0.6);
   text-align: center;
 }
 
 .feedback input,
 .feedback textarea {
   width: 300px;
-  margin: 8px;
   padding: 10px;
+  margin: 8px;
   border-radius: 6px;
   border: none;
+}
+
+.feedback button {
+  padding: 10px 20px;
+  background: #5865f2;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
 }
