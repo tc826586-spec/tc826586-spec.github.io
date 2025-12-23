@@ -1,14 +1,14 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #0d0d1f;
+  background: #0f1220;
   color: white;
+  text-align: center;
 }
 
-.navbar {
+header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 15px 30px;
   background: #111;
 }
@@ -20,42 +20,48 @@ body {
 }
 
 .logo img {
-  height: 35px;
+  height: 40px;
 }
 
-.navbar a {
-  color: white;
+nav a {
   margin-left: 20px;
+  color: white;
   text-decoration: none;
 }
 
-.section {
-  padding: 40px;
-  max-width: 700px;
-  margin: auto;
+.hero {
+  padding: 60px 20px;
 }
 
-.game-card, .buy-card {
-  background: #2a2a40;
-  padding: 15px 20px;
+section {
+  padding: 40px 20px;
+}
+
+.card {
+  background: #1c1f3a;
+  margin: 15px auto;
+  max-width: 320px;
+  padding: 15px;
   border-radius: 10px;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
-.game-card a {
-  background: #00bfff;
-  padding: 8px 15px;
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.card a {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: #00b3ff;
   color: black;
   border-radius: 20px;
   text-decoration: none;
+  font-weight: bold;
 }
 
 footer {
-  text-align: center;
-  padding: 20px;
+  padding: 15px;
   background: #111;
-  margin-top: 50px;
 }
