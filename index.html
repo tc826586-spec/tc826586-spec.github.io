@@ -1,102 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Gaming Hub</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Gaming Hub – Play & Buy Games Online</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Razorpay -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- ✅ Google AdSense Code (DO NOT MODIFY) -->
+    <script async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3278025401135303"
+        crossorigin="anonymous">
+    </script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Favicon / Logo -->
+    <link rel="icon" href="images/logo.png">
 </head>
 
 <body>
 
-<header class="navbar">
-  <div class="logo">
-    <img src="images/E-sport Logo for Gamers, Raven.jpeg">
-    <span>Gaming Hub</span>
-  </div>
-  <nav>
-    <a href="#">Home</a>
-    <a href="#online">Play Online</a>
-    <a href="#store">Buy Games</a>
-    <a href="#contact">Contact</a>
-  </nav>
-</header>
+    <!-- HEADER -->
+    <header class="navbar">
+        <div class="logo">
+            <img src="images/logo.png" alt="Gaming Hub Logo">
+            <span>Gaming Hub</span>
+        </div>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#play">Play</a>
+            <a href="#buy">Buy</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
 
-<section class="hero">
-  <h1>Buy & Play Games Online</h1>
-  <p>Play browser games instantly or buy premium PC games securely</p>
-</section>
+    <!-- HERO -->
+    <section class="hero" id="home">
+        <h1>Buy, Sell & Play Games Online</h1>
+        <p>Play free games instantly or buy premium PC & console games securely.</p>
+        <a href="#play" class="btn">Play Free Games</a>
+    </section>
 
-<!-- ONLINE GAMES -->
-<section id="online" class="section">
-  <h2>Play Online</h2>
-  <div class="grid">
-    <div class="card"><h3>Tic Tac Toe</h3><a href="https://playtictactoe.org/" target="_blank">Play</a></div>
-    <div class="card"><h3>Snake</h3><a href="https://playsnake.org/" target="_blank">Play</a></div>
-    <div class="card"><h3>2048</h3><a href="https://play2048.co/" target="_blank">Play</a></div>
-    <div class="card"><h3>Chess</h3><a href="https://www.chess.com/play/computer" target="_blank">Play</a></div>
-  </div>
-</section>
+    <!-- PLAY ONLINE -->
+    <section class="section" id="play">
+        <h2>Play Online</h2>
 
-<!-- STORE -->
-<section id="store" class="section dark">
-  <h2>Buy Games</h2>
+        <div class="cards">
+            <div class="card">Tic Tac Toe <button>Play</button></div>
+            <div class="card">Snake <button>Play</button></div>
+            <div class="card">2048 <button>Play</button></div>
+            <div class="card">Chess <button>Play</button></div>
+        </div>
+    </section>
 
-  <div class="grid">
+    <!-- BUY GAMES -->
+    <section class="section" id="buy">
+        <h2>Buy Games</h2>
 
-    <div class="card game">
-      <img src="images/d753119e-0edc-4efa-8e33-aa79a30ac730.jpeg">
-      <h3>GTA V</h3>
-      <p>₹999</p>
-      <button onclick="pay(999, 'GTA V')">Buy Now</button>
-    </div>
+        <div class="cards">
+            <div class="card">
+                <img src="images/gta.jpg" alt="GTA V">
+                <h3>GTA V</h3>
+                <p>₹999</p>
+                <button>Buy Now</button>
+            </div>
 
-    <div class="card game">
-      <img src="images/COD modern ware fare 2 logo.jpeg">
-      <h3>Call of Duty</h3>
-      <p>₹799</p>
-      <button onclick="pay(799, 'Call of Duty')">Buy Now</button>
-    </div>
+            <div class="card">
+                <img src="images/cod.jpg" alt="Call of Duty">
+                <h3>Call of Duty</h3>
+                <p>₹799</p>
+                <button>Buy Now</button>
+            </div>
 
-    <div class="card game">
-      <img src="images/download.jpg">
-      <h3>Minecraft</h3>
-      <p>₹499</p>
-      <button onclick="pay(499, 'Minecraft')">Buy Now</button>
-    </div>
+            <div class="card">
+                <img src="images/minecraft.jpg" alt="Minecraft">
+                <h3>Minecraft</h3>
+                <p>₹499</p>
+                <button>Buy Now</button>
+            </div>
+        </div>
+    </section>
 
-  </div>
-</section>
+    <!-- CONTACT -->
+    <section class="section" id="contact">
+        <h2>Contact Us</h2>
+        <form>
+            <input type="text" placeholder="Your Name" required>
+            <input type="email" placeholder="Your Email" required>
+            <textarea placeholder="Your Message"></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </section>
 
-<section id="contact" class="section">
-  <h2>Contact</h2>
-  <p>Support: 7902057433</p>
-</section>
-
-<footer>© 2025 Gaming Hub</footer>
-
-<script>
-function pay(amount, game) {
-  var options = {
-    "key": "YOUR_RAZORPAY_KEY_ID", // <-- ADD YOUR KEY
-    "amount": amount * 100,
-    "currency": "INR",
-    "name": "Gaming Hub",
-    "description": game,
-    "handler": function (response){
-      alert("Payment Successful!\nPayment ID: " + response.razorpay_payment_id);
-    },
-    "theme": {
-      "color": "#4f46e5"
-    }
-  };
-  var rzp = new Razorpay(options);
-  rzp.open();
-}
-</script>
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 Gaming Hub. All rights reserved.</p>
+    </footer>
 
 </body>
 </html>
