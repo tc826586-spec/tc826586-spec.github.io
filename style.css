@@ -1,67 +1,50 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f1220;
-  color: white;
-  text-align: center;
+  font-family: Arial;
+  background: #f4f4f4;
 }
 
 header {
+  background: #333;
+  color: white;
+  padding: 15px;
   display: flex;
   justify-content: space-between;
-  padding: 15px 30px;
-  background: #111;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo img {
-  height: 40px;
-}
-
-nav a {
-  margin-left: 20px;
+header a {
   color: white;
+  margin-left: 15px;
   text-decoration: none;
 }
 
-.hero {
-  padding: 60px 20px;
+.games {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
 }
 
-section {
-  padding: 40px 20px;
-}
-
-.card {
-  background: #1c1f3a;
-  margin: 15px auto;
-  max-width: 320px;
+.game-card {
+  background: #666;
+  color: white;
   padding: 15px;
+  width: 200px;
+  text-align: center;
   border-radius: 10px;
 }
 
-.card img {
+.game-card img {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
-.card a {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 10px 20px;
+.game-card a {
+  display: block;
   background: #00b3ff;
   color: black;
-  border-radius: 20px;
+  padding: 8px;
+  margin-top: 10px;
+  border-radius: 5px;
   text-decoration: none;
-  font-weight: bold;
-}
-
-footer {
-  padding: 15px;
-  background: #111;
 }
