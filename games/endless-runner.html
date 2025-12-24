@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Endless Runner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  background: #0f2027;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  color: #fff;
+}
+
+.game {
+  width: 360px;
+  height: 600px;
+  background: linear-gradient(#111, #333);
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.player {
+  width: 40px;
+  height: 60px;
+  background: #00ffd5;
+  position: absolute;
+  bottom: 80px;
+  left: 160px;
+  border-radius: 8px;
+}
+
+.obstacle {
+  width: 40px;
+  height: 40px;
+  background: #ff4757;
+  position: absolute;
+  top: -40px;
+  border-radius: 6px;
+}
+
+.score {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 18px;
+}
+
+.controls {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.controls button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #00ffd5;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game" id="game">
+  <div class="score" id="score">Score: 0</div>
+  <div class="player" id="player"></div>
+
+  <div class="controls">
+    <button onclick="moveLeft()">⬅</button>
+    <button onclick="jump()">⬆</button>
+    <button onclick="moveRight()">➡</button>
+  </div>
+</div>
+
+<script>
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+const scoreEl = document.getElementById("score");
+
+let lanes = [60, 160, 260];
+let laneIndex = 1;
+let jumping = false;
+let score = 0;
+let speed = 4;
+let gameOver = false;
+
+player.style.left = lanes[laneIndex] + "px";
+
+function moveLeft() {
+  if (laneIndex > 0) {
+    laneIndex--;
+    player.style.left = lanes[laneIndex] + "px";
+  }
+}
+
+function moveRight() {
+  if (laneIndex < 2) {
+    laneIndex++;
+    player.style.left = lanes[laneIndex] + "px";
+  }
+}
+
+function jump() {
+  if (jumping) return;
+  jumping = true;
+  let up = 0;
+  const jumpInterval = setInterval(() => {
+    up += 5;
+    player.style.bottom = 80 + up + "px";
+    if (up >= 60) {
+      clearInterval(jumpInterval);
+      fall();
+    }
+  }, 20);
+}
+
+function fall() {
+  let down = 60;
+  const fallInterval = setInterval(() => {
+    down -= 5;
+    player.style.bottom = 80 + down + "px";
+    if (down <= 0) {
+      clearInterval(fallInterval);
+      jumping = false;
+    }
+  }, 20);
+}
+
+function createObstacle() {
+  if (gameOver) return;
+
+  const obs = document.createElement("div");
+  obs.classList.add("obstacle");
+  const lane = lanes[Math.floor(Math.random() * 3)];
+  obs.style.left = lane + "px";
+  game.appendChild(obs);
+
+  let top = -40;
+
+  const moveObs = setInterval(() => {
+    if (gameOver) {
+      clearInterval(moveObs);
+      obs.remove();
+      return;
+    }
+
+    top += speed;
+    obs.style.top = top + "px";
+
+    const pRect = player.getBoundingClientRect();
+    const oRect = obs.getBoundingClientRect();
+
+    if (
+      pRect.left < oRect.right &&
+      pRect.right > oRect.left &&
+      pRect.top < oRect.bottom &&
+      pRect.bottom > oRect.top
+    ) {
+      gameOver = true;
+      alert("Game Over! Score: " + score);
+      location.reload();
+    }
+
+    if (top > 600) {
+      clearInterval(moveObs);
+      obs.remove();
+    }
+  }, 20);
+}
+
+setInterval(() => {
+  if (!gameOver) {
+    score++;
+    scoreEl.textContent = "Score: " + score;
+    if (score % 100 === 0) speed++;
+  }
+}, 100);
+
+setInterval(createObstacle, 1200);
+
+// Keyboard controls
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") moveLeft();
+  if (e.key === "ArrowRight") moveRight();
+  if (e.key === "ArrowUp") jump();
+});
+</script>
+
+</body>
+</html>
