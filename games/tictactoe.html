@@ -5,32 +5,32 @@
 <title>3D Tic Tac Toe</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- THREE.JS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <style>
 body{
   margin:0;
   background:#05070c;
-  font-family:Arial;
   color:#fff;
+  font-family:Arial;
   text-align:center;
 }
 .top{
   padding:10px;
 }
 button,select{
-  padding:6px 12px;
+  padding:6px 10px;
+  margin:4px;
   border:none;
   border-radius:6px;
   font-weight:bold;
 }
+#status{
+  margin-top:6px;
+}
 canvas{
   display:block;
   margin:auto;
-}
-.score{
-  margin:8px 0;
 }
 </style>
 </head>
@@ -38,7 +38,7 @@ canvas{
 <body>
 
 <div class="top">
-  <button onclick="setMode('ai')">VS AI</button>
+  <button onclick="setMode('ai')">VS Computer</button>
   <button onclick="setMode('two')">Two Players</button>
 
   <select onchange="setTheme(this.value)">
@@ -47,18 +47,18 @@ canvas{
     <option value="classic">Classic</option>
   </select>
 
-  <div class="score">
+  <div>
     X: <span id="sx">0</span> |
     O: <span id="so">0</span>
   </div>
 
-  <div id="status">Choose mode</div>
+  <div id="status">Choose Mode</div>
 </div>
 
 <script>
-/* ---------- SOUND ---------- */
-const sndClick=new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_74f9cbb1f4.mp3");
-const sndWin=new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_61b2a08a68.mp3");
+/* ---------- SOUNDS ---------- */
+const clickSound=new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_74f9cbb1f4.mp3");
+const winSound=new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_61b2a08a68.mp3");
 
 /* ---------- GAME STATE ---------- */
 let board=Array(9).fill("");
@@ -67,17 +67,18 @@ let mode="";
 let scores={X:0,O:0};
 let gameOn=false;
 
-/* ---------- THREE.JS ---------- */
+/* ---------- THREE SETUP ---------- */
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
 const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth,window.innerHeight-150);
+renderer.setSize(window.innerWidth,window.innerHeight-140);
 document.body.appendChild(renderer.domElement);
 
 camera.position.set(0,6,8);
 camera.lookAt(0,0,0);
 
-const light=new THREE.DirectionalLight(0xffffff,1);
+scene.add(new THREE.AmbientLight(0xffffff,0.6));
+const light=new THREE.DirectionalLight(0xffffff,0.8);
 light.position.set(5,10,5);
 scene.add(light);
 
@@ -89,36 +90,39 @@ for(let i=0;i<9;i++){
   let mat=new THREE.MeshStandardMaterial({color:0x222244});
   let tile=new THREE.Mesh(geo,mat);
   tile.position.set((i%3-1)*2,0,(-Math.floor(i/3)+1)*2);
-  tile.userData.index=i;
+  tile.userData.i=i;
   scene.add(tile);
   tiles.push(tile);
 }
 
 /* ---------- WIN LINE ---------- */
 let winLine;
-function drawWinLine(a,b){
-  const g=new THREE.BufferGeometry().setFromPoints([tiles[a].position,tiles[b].position]);
+function drawLine(a,b){
+  const g=new THREE.BufferGeometry().setFromPoints([
+    tiles[a].position,
+    tiles[b].position
+  ]);
   const m=new THREE.LineBasicMaterial({color:0xffff00});
   winLine=new THREE.Line(g,m);
   scene.add(winLine);
 }
 
-/* ---------- THEME ---------- */
+/* ---------- THEMES ---------- */
 function setTheme(t){
-  const colors={
+  const themes={
     neon:0x00ffd5,
     dark:0x333333,
     classic:0xffffff
   };
-  tiles.forEach(tl=>tl.material.color.setHex(colors[t]));
+  tiles.forEach(tile=>tile.material.color.setHex(themes[t]));
 }
 
 /* ---------- MODE ---------- */
 function setMode(m){
   mode=m;
-  reset();
+  resetGame();
   gameOn=true;
-  document.getElementById("status").innerText=current+"'s turn";
+  statusText();
 }
 
 /* ---------- AI (MINIMAX) ---------- */
@@ -136,8 +140,8 @@ function aiMove(){
 }
 
 function minimax(b,depth,isMax){
-  if(check("O")) return 10-depth;
-  if(check("X")) return depth-10;
+  if(checkWin("O")) return 10-depth;
+  if(checkWin("X")) return depth-10;
   if(b.every(c=>c)) return 0;
 
   let best=isMax?-Infinity:Infinity;
@@ -152,32 +156,32 @@ function minimax(b,depth,isMax){
   return best;
 }
 
-/* ---------- CLICK ---------- */
-const raycaster=new THREE.Raycaster();
+/* ---------- INPUT ---------- */
+const ray=new THREE.Raycaster();
 const mouse=new THREE.Vector2();
 
 window.addEventListener("click",e=>{
-  if(!gameOn)return;
+  if(!gameOn) return;
   mouse.x=(e.clientX/window.innerWidth)*2-1;
   mouse.y=-(e.clientY/window.innerHeight)*2+1;
-  raycaster.setFromCamera(mouse,camera);
-  const hit=raycaster.intersectObjects(tiles);
-  if(hit.length) play(hit[0].object.userData.index);
+  ray.setFromCamera(mouse,camera);
+  const hit=ray.intersectObjects(tiles);
+  if(hit.length) play(hit[0].object.userData.i);
 });
 
 /* ---------- PLAY ---------- */
 function play(i){
-  if(board[i])return;
-  sndClick.play();
+  if(board[i]) return;
+  clickSound.play();
   board[i]=current;
   tiles[i].material.color.setHex(current==="X"?0x00ffd5:0xff5c8a);
 
-  if(check(current)){
-    sndWin.play();
+  if(checkWin(current)){
+    winSound.play();
     scores[current]++;
     document.getElementById("sx").innerText=scores.X;
     document.getElementById("so").innerText=scores.O;
-    document.getElementById("status").innerText=current+" wins!";
+    document.getElementById("status").innerText=current+" Wins!";
     gameOn=false;
     return;
   }
@@ -189,25 +193,29 @@ function play(i){
   }
 
   current=current==="X"?"O":"X";
-  document.getElementById("status").innerText=current+"'s turn";
+  statusText();
 
   if(mode==="ai" && current==="O") setTimeout(aiMove,400);
 }
 
 /* ---------- CHECK ---------- */
 const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-function check(p){
+function checkWin(p){
   for(let w of wins){
     if(w.every(i=>board[i]===p)){
-      drawWinLine(w[0],w[2]);
+      drawLine(w[0],w[2]);
       return true;
     }
   }
   return false;
 }
 
-/* ---------- RESET ---------- */
-function reset(){
+/* ---------- UTIL ---------- */
+function statusText(){
+  document.getElementById("status").innerText=current+"'s Turn";
+}
+
+function resetGame(){
   board.fill("");
   current="X";
   tiles.forEach(t=>t.material.color.setHex(0x222244));
