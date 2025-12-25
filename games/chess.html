@@ -1,9 +1,203 @@
 <!DOCTYPE html>
-<html>
-<head><title>Chess</title></head>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>3D Chess – Unbeatable AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #111827, #020617);
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+#ui {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 10;
+}
+
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #22d3ee;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#status {
+  margin-top: 10px;
+  font-size: 14px;
+}
+</style>
+</head>
+
 <body>
-<h1>Chess</h1>
-<p>Game coming soon ♟️</p>
-<a href="../index.html">⬅ Back</a>
+
+<div id="ui">
+  <button onclick="restartGame()">Restart</button>
+  <div id="status">Your move (White)</div>
+</div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/chess.min.js"></script>
+
+<script>
+/* ================= CHESS LOGIC ================= */
+const game = new Chess();
+const statusEl = document.getElementById("status");
+
+/* ================= STOCKFISH AI ================= */
+const stockfish = new Worker("https://cdn.jsdelivr.net/npm/stockfish/stockfish.js");
+
+stockfish.postMessage("uci");
+stockfish.postMessage("setoption name Skill Level value 20"); // MAX strength
+
+function aiMove() {
+  stockfish.postMessage("position fen " + game.fen());
+  stockfish.postMessage("go depth 18");
+}
+
+stockfish.onmessage = function(e) {
+  const line = e.data;
+  if (line.startsWith("bestmove")) {
+    const move = line.split(" ")[1];
+    game.move(move);
+    updateBoard();
+    statusEl.innerText = "Your move (White)";
+  }
+};
+
+/* ================= THREE.JS ================= */
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.set(6, 8, 10);
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+/* Light */
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+dirLight.position.set(5, 10, 5);
+scene.add(dirLight);
+
+/* Board */
+const boardGroup = new THREE.Group();
+scene.add(boardGroup);
+
+const squareSize = 1;
+const colors = [0xeeeeee, 0x111111];
+
+for (let x = 0; x < 8; x++) {
+  for (let z = 0; z < 8; z++) {
+    const square = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 0.1, 1),
+      new THREE.MeshStandardMaterial({ color: colors[(x + z) % 2] })
+    );
+    square.position.set(x - 3.5, 0, z - 3.5);
+    boardGroup.add(square);
+  }
+}
+
+/* Pieces */
+const pieceMeshes = {};
+const pieceGeo = new THREE.CylinderGeometry(0.3, 0.4, 0.8, 32);
+
+function addPiece(type, color, x, z) {
+  const mat = new THREE.MeshStandardMaterial({
+    color: color === "w" ? 0xffffff : 0x000000
+  });
+  const piece = new THREE.Mesh(pieceGeo, mat);
+  piece.position.set(x - 3.5, 0.5, z - 3.5);
+  piece.userData = { type, color, square: `${"abcdefgh"[x]}${8 - z}` };
+  scene.add(piece);
+  pieceMeshes[piece.userData.square] = piece;
+}
+
+/* Initial pieces */
+function setupPieces() {
+  Object.values(pieceMeshes).forEach(p => scene.remove(p));
+  Object.keys(pieceMeshes).forEach(k => delete pieceMeshes[k]);
+
+  game.board().forEach((row, z) => {
+    row.forEach((p, x) => {
+      if (p) addPiece(p.type, p.color, x, z);
+    });
+  });
+}
+
+setupPieces();
+
+/* Update board */
+function updateBoard() {
+  setupPieces();
+  if (game.in_checkmate()) {
+    statusEl.innerText = "Checkmate! AI wins 🧠";
+  }
+}
+
+/* Click to move */
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let selected = null;
+
+window.addEventListener("click", e => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(Object.values(pieceMeshes));
+
+  if (intersects.length > 0) {
+    const piece = intersects[0].object;
+    if (!selected && piece.userData.color === "w") {
+      selected = piece;
+    } else if (selected) {
+      const move = game.move({
+        from: selected.userData.square,
+        to: piece.userData.square
+      });
+      if (move) {
+        updateBoard();
+        statusEl.innerText = "AI thinking...";
+        setTimeout(aiMove, 400);
+      }
+      selected = null;
+    }
+  }
+});
+
+/* Restart */
+function restartGame() {
+  game.reset();
+  updateBoard();
+  statusEl.innerText = "Your move (White)";
+}
+
+/* Render loop */
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+animate();
+
+/* Resize */
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
 </body>
 </html>
