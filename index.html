@@ -2,263 +2,224 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gaming Adda – Play Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ===== RESET ===== */
-* {
-  box-sizing: border-box;
+body {
   margin: 0;
-  padding: 0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: white;
 }
 
-/* ===== BODY ===== */
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: radial-gradient(circle at top, #1a1f3c, #000);
-  color: #fff;
-  overflow-x: hidden;
-}
-  
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3278025401135303"
-     crossorigin="anonymous"></script>
-<!-- Any ad -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-3278025401135303"
-     data-ad-slot="7267749291"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-  
-/* ===== NAVBAR ===== */
+/* Navbar */
 nav {
-  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
-  background: rgba(0,0,0,0.6);
+  padding: 14px 25px;
+  background: #020617;
 }
-
-nav h2 {
-  color: #00eaff;
+nav h1 {
+  color: #00e5ff;
 }
-
 nav a {
   color: white;
+  margin-left: 15px;
   text-decoration: none;
-  margin-left: 20px;
 }
 
-/* ===== MAIN CONTAINER ===== */
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
-}
-
-/* ===== HERO ===== */
+/* Hero */
 .hero {
   text-align: center;
-  padding: 50px 20px;
+  padding: 80px 20px;
 }
-
-.hero h1 {
-  font-size: 2.5rem;
+.hero h2 {
+  font-size: 38px;
 }
-
 .hero p {
-  margin: 10px 0 20px;
-  opacity: 0.8;
+  color: #9ca3af;
 }
-
 .hero button {
-  padding: 12px 25px;
-  background: #00eaff;
+  margin-top: 20px;
+  padding: 12px 26px;
   border: none;
-  border-radius: 20px;
-  cursor: pointer;
+  border-radius: 25px;
+  background: #00e5ff;
   font-weight: bold;
+  cursor: pointer;
 }
 
-/* ===== SECTION TITLES ===== */
-.section-title {
-  margin: 40px 0 20px;
-  font-size: 1.6rem;
+/* Sections */
+.section {
+  padding: 60px 20px;
+}
+.section h2 {
   text-align: center;
+  margin-bottom: 35px;
 }
 
-/* ===== GRID ===== */
-.games-grid {
+/* Game Cards */
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(230px,1fr));
+  gap: 25px;
 }
 
-/* ===== GAME CARD ===== */
-.game-card {
-  background: #111;
-  border-radius: 15px;
+.card {
+  background: #111827;
+  border-radius: 14px;
   padding: 15px;
   text-align: center;
-  box-shadow: 0 0 20px rgba(0,0,0,0.6);
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 0 15px rgba(0,255,255,.15);
+  transition: .3s;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 30px rgba(0,255,255,.4);
 }
 
-.game-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 25px #00eaff;
-}
-
-.game-card img {
+.card img {
   width: 100%;
-  height: 160px;
-  object-fit: cover;
+  height: 140px;
   border-radius: 10px;
+  object-fit: cover;
 }
 
-.game-card h3 {
-  margin: 10px 0;
+.card h3 {
+  margin: 12px 0 5px;
+}
+.card p {
+  color: #9ca3af;
+  font-size: 14px;
 }
 
-.game-card button {
-  padding: 8px 18px;
-  background: #00eaff;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
+.btn {
   margin-top: 10px;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  background: #00e5ff;
   font-weight: bold;
+  cursor: pointer;
 }
 
-/* ===== FOOTER ===== */
+/* Footer */
 footer {
   text-align: center;
   padding: 20px;
-  opacity: 0.6;
-  margin-top: 40px;
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 600px) {
-  .hero h1 {
-    font-size: 2rem;
-  }
+  color: #9ca3af;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== NAV ===== -->
 <nav>
-  <h2>🎮 Gaming Adda</h2>
+  <h1>🎮 Gaming Adda</h1>
   <div>
-    <a href="#">Home</a>
     <a href="#free">Free Games</a>
     <a href="#buy">Buy Games</a>
   </div>
 </nav>
 
-<!-- ===== MAIN ===== -->
-<div class="container">
+<section class="hero">
+  <h2>Play & Buy Your Favourite Games</h2>
+  <p>Play free games or buy premium games directly</p>
+  <button onclick="scrollToGames()">Start Playing</button>
+</section>
 
-  <!-- HERO -->
-  <div class="hero">
-    <h1>Play & Buy Your Favourite Games</h1>
-    <p>Play free games or buy premium games directly</p>
-    <button onclick="alert('Scroll Down')">Start Playing</button>
-  </div>
+<!-- FREE GAMES -->
+<section class="section" id="free">
+  <h2>🎯 Free Games</h2>
+  <div class="grid">
 
-  <!-- FREE GAMES -->
-  <h2 id="free" class="section-title">🎯 Free Games</h2>
-  <div class="games-grid">
-    <div class="game-card">
-      <img src="images/Screenshot 2025-12-25 122350.png">
+    <div class="card">
+      <img src="https://i.imgur.com/1X6RZ6m.png">
       <h3>Chess</h3>
-      <button onclick="location.href='games/chess.html'">Play</button>
+      <p>Classic strategy game</p>
+      <button class="btn" onclick="playGame('Chess')">Play</button>
     </div>
 
-    <section class="games-section">
-  <h2 class="section-title">🎮 More Free Games</h2>
+    <div class="card">
+      <img src="https://i.imgur.com/Lx2Qp9z.png">
+      <h3>2048</h3>
+      <p>Number merging puzzle</p>
+      <button class="btn" onclick="playGame('2048')">Play</button>
+    </div>
 
-  <div class="games-grid">
+    <div class="card">
+      <img src="https://i.imgur.com/1qVZ1Zl.png">
+      <h3>Snake</h3>
+      <p>Classic snake game</p>
+      <button class="btn" onclick="playGame('Snake')">Play</button>
+    </div>
 
-    <!-- Tic Tac Toe -->
-    <div class="game-card">
-      <img src="assets/tictactoe.png" alt="Tic Tac Toe">
+    <div class="card">
+      <img src="https://i.imgur.com/jnJ6Eo7.png">
       <h3>Tic Tac Toe</h3>
-      <p>Play against AI or 2 players</p>
-      <a href="games/tictactoe.html" class="play-btn">Play Now</a>
+      <p>AI & 2 Player Mode</p>
+      <button class="btn" onclick="playGame('Tic Tac Toe')">Play</button>
     </div>
 
-    <!-- Flappy Bird -->
-    <div class="game-card">
-      <img src="assets/flappy.png" alt="Flappy Bird">
+    <div class="card">
+      <img src="https://i.imgur.com/QxZ7K9Y.png">
       <h3>Flappy Bird</h3>
-      <p>Tap to fly & avoid pipes</p>
-      <a href="games/flappy.html" class="play-btn">Play Now</a>
+      <p>Tap to fly</p>
+      <button class="btn" onclick="playGame('Flappy Bird')">Play</button>
     </div>
 
-    <!-- Memory Game -->
-    <div class="game-card">
-      <img src="assets/memory.png" alt="Memory Game">
+    <div class="card">
+      <img src="https://i.imgur.com/c9VZbW4.png">
       <h3>Memory Game</h3>
-      <p>Test your brain power</p>
-      <a href="games/memory.html" class="play-btn">Play Now</a>
-    </div>
-
-    <!-- Car Racing -->
-    <div class="game-card">
-      <img src="assets/racing.png" alt="Car Racing">
-      <h3>Car Racing</h3>
-      <p>Speed & control challenge</p>
-      <a href="games/racing.html" class="play-btn">Play Now</a>
+      <p>Brain challenge</p>
+      <button class="btn" onclick="playGame('Memory Game')">Play</button>
     </div>
 
   </div>
 </section>
 
-    <div class="game-card">
-      <img src="images/images.jpg">
-      <h3>2048</h3>
-      <button onclick="location.href='games/2048.html'">Play</button>
+<!-- BUY GAMES -->
+<section class="section" id="buy">
+  <h2>💎 Premium Games</h2>
+  <div class="grid">
+
+    <div class="card">
+      <img src="https://i.imgur.com/Y6B1E9F.png">
+      <h3>3D Chess Pro</h3>
+      <p>Advanced AI + 3D Board</p>
+      <button class="btn" onclick="buyGame('3D Chess Pro',99)">Buy ₹99</button>
     </div>
 
-    <div class="game-card">
-      <img src="images/360_F_726345598_2bPzqF0v1e0zTInIw7rKqcyiOJkbh9Br.jpg">
-      <h3>Snake</h3>
-      <button onclick="location.href='games/snake.html'">Play</button>
-  </div>
-
-  </div>
-
-  <!-- BUY GAMES -->
-  <h2 id="buy" class="section-title">💳 Buy Games</h2>
-  <div class="games-grid">
-    <div class="game-card">
-      <img src="https://upload.wikimedia.org/wikipedia/en/a/a5/Grand_Theft_Auto_V.png">
-      <h3>GTA V</h3>
-      <button class="buy-btn" onclick="buyGame()">Buy ₹999</button>
+    <div class="card">
+      <img src="https://i.imgur.com/WlH0F0F.png">
+      <h3>Endless Runner</h3>
+      <p>Fast paced action</p>
+      <button class="btn" onclick="buyGame('Endless Runner',79)">Buy ₹79</button>
     </div>
 
-    <div class="game-card">
-      <img src="images/COD modern ware fare 2 logo.jpeg">
-      <h3>Call of Duty</h3>
-      <button>Buy ₹899</button>
-    </div>
   </div>
+</section>
 
-</div>
-
-<!-- FOOTER -->
 <footer>
   © 2025 Gaming Adda | All Rights Reserved
 </footer>
+
+<script>
+function playGame(game) {
+  alert("Launching " + game + " (demo)");
+}
+
+function buyGame(game, price) {
+  alert("Buying " + game + " for ₹" + price);
+  // Razorpay / UPI can be added here
+}
+
+function scrollToGames() {
+  document.getElementById("free").scrollIntoView({behavior:"smooth"});
+}
+</script>
 
 </body>
 </html>
