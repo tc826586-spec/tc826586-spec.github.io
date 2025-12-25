@@ -2,184 +2,225 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Tic Tac Toe</title>
+<title>3D Tic Tac Toe</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- THREE.JS -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  color: #fff;
+body{
+  margin:0;
+  background:#05070c;
+  font-family:Arial;
+  color:#fff;
+  text-align:center;
 }
-
-.game-container {
-  background: #111;
-  padding: 20px;
-  border-radius: 12px;
-  width: 320px;
-  text-align: center;
-  box-shadow: 0 0 20px #00ffd5;
+.top{
+  padding:10px;
 }
-
-h1 {
-  margin-bottom: 10px;
+button,select{
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  font-weight:bold;
 }
-
-.mode-buttons button {
-  margin: 5px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #00ffd5;
-  color: #000;
-  font-weight: bold;
+canvas{
+  display:block;
+  margin:auto;
 }
-
-.board {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  margin: 15px 0;
-}
-
-.cell {
-  width: 90px;
-  height: 90px;
-  background: #222;
-  font-size: 2.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.cell:hover {
-  background: #333;
-}
-
-.status {
-  margin: 10px 0;
-  font-weight: bold;
-}
-
-.reset {
-  background: #ff4757;
-  border: none;
-  padding: 8px 16px;
-  color: #fff;
-  border-radius: 6px;
-  cursor: pointer;
+.score{
+  margin:8px 0;
 }
 </style>
 </head>
 
 <body>
 
-<div class="game-container">
-  <h1>Tic Tac Toe</h1>
+<div class="top">
+  <button onclick="setMode('ai')">VS AI</button>
+  <button onclick="setMode('two')">Two Players</button>
 
-  <div class="mode-buttons">
-    <button onclick="setMode('computer')">VS Computer</button>
-    <button onclick="setMode('player')">Two Player</button>
+  <select onchange="setTheme(this.value)">
+    <option value="neon">Neon</option>
+    <option value="dark">Dark</option>
+    <option value="classic">Classic</option>
+  </select>
+
+  <div class="score">
+    X: <span id="sx">0</span> |
+    O: <span id="so">0</span>
   </div>
 
-  <div class="status" id="status">Choose a mode</div>
-
-  <div class="board" id="board"></div>
-
-  <button class="reset" onclick="resetGame()">Restart</button>
+  <div id="status">Choose mode</div>
 </div>
 
 <script>
-const boardElement = document.getElementById("board");
-const statusText = document.getElementById("status");
+/* ---------- SOUND ---------- */
+const sndClick=new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_74f9cbb1f4.mp3");
+const sndWin=new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_61b2a08a68.mp3");
 
-let board = Array(9).fill("");
-let currentPlayer = "X";
-let gameActive = false;
-let mode = "";
+/* ---------- GAME STATE ---------- */
+let board=Array(9).fill("");
+let current="X";
+let mode="";
+let scores={X:0,O:0};
+let gameOn=false;
 
-const winPatterns = [
-  [0,1,2],[3,4,5],[6,7,8],
-  [0,3,6],[1,4,7],[2,5,8],
-  [0,4,8],[2,4,6]
-];
+/* ---------- THREE.JS ---------- */
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth,window.innerHeight-150);
+document.body.appendChild(renderer.domElement);
 
-function setMode(selectedMode) {
-  mode = selectedMode;
-  resetGame();
-  gameActive = true;
-  statusText.textContent = currentPlayer + "'s turn";
+camera.position.set(0,6,8);
+camera.lookAt(0,0,0);
+
+const light=new THREE.DirectionalLight(0xffffff,1);
+light.position.set(5,10,5);
+scene.add(light);
+
+/* ---------- BOARD ---------- */
+const tiles=[];
+const geo=new THREE.BoxGeometry(1.8,0.4,1.8);
+
+for(let i=0;i<9;i++){
+  let mat=new THREE.MeshStandardMaterial({color:0x222244});
+  let tile=new THREE.Mesh(geo,mat);
+  tile.position.set((i%3-1)*2,0,(-Math.floor(i/3)+1)*2);
+  tile.userData.index=i;
+  scene.add(tile);
+  tiles.push(tile);
 }
 
-function createBoard() {
-  boardElement.innerHTML = "";
-  board.forEach((cell, index) => {
-    const div = document.createElement("div");
-    div.classList.add("cell");
-    div.textContent = cell;
-    div.addEventListener("click", () => handleMove(index));
-    boardElement.appendChild(div);
-  });
+/* ---------- WIN LINE ---------- */
+let winLine;
+function drawWinLine(a,b){
+  const g=new THREE.BufferGeometry().setFromPoints([tiles[a].position,tiles[b].position]);
+  const m=new THREE.LineBasicMaterial({color:0xffff00});
+  winLine=new THREE.Line(g,m);
+  scene.add(winLine);
 }
 
-function handleMove(index) {
-  if (!gameActive || board[index] !== "") return;
+/* ---------- THEME ---------- */
+function setTheme(t){
+  const colors={
+    neon:0x00ffd5,
+    dark:0x333333,
+    classic:0xffffff
+  };
+  tiles.forEach(tl=>tl.material.color.setHex(colors[t]));
+}
 
-  board[index] = currentPlayer;
-  createBoard();
+/* ---------- MODE ---------- */
+function setMode(m){
+  mode=m;
+  reset();
+  gameOn=true;
+  document.getElementById("status").innerText=current+"'s turn";
+}
 
-  if (checkWin(currentPlayer)) {
-    statusText.textContent = currentPlayer + " wins!";
-    gameActive = false;
+/* ---------- AI (MINIMAX) ---------- */
+function aiMove(){
+  let best=-Infinity,move;
+  for(let i=0;i<9;i++){
+    if(!board[i]){
+      board[i]="O";
+      let score=minimax(board,0,false);
+      board[i]="";
+      if(score>best){best=score;move=i;}
+    }
+  }
+  play(move);
+}
+
+function minimax(b,depth,isMax){
+  if(check("O")) return 10-depth;
+  if(check("X")) return depth-10;
+  if(b.every(c=>c)) return 0;
+
+  let best=isMax?-Infinity:Infinity;
+  for(let i=0;i<9;i++){
+    if(!b[i]){
+      b[i]=isMax?"O":"X";
+      let s=minimax(b,depth+1,!isMax);
+      b[i]="";
+      best=isMax?Math.max(best,s):Math.min(best,s);
+    }
+  }
+  return best;
+}
+
+/* ---------- CLICK ---------- */
+const raycaster=new THREE.Raycaster();
+const mouse=new THREE.Vector2();
+
+window.addEventListener("click",e=>{
+  if(!gameOn)return;
+  mouse.x=(e.clientX/window.innerWidth)*2-1;
+  mouse.y=-(e.clientY/window.innerHeight)*2+1;
+  raycaster.setFromCamera(mouse,camera);
+  const hit=raycaster.intersectObjects(tiles);
+  if(hit.length) play(hit[0].object.userData.index);
+});
+
+/* ---------- PLAY ---------- */
+function play(i){
+  if(board[i])return;
+  sndClick.play();
+  board[i]=current;
+  tiles[i].material.color.setHex(current==="X"?0x00ffd5:0xff5c8a);
+
+  if(check(current)){
+    sndWin.play();
+    scores[current]++;
+    document.getElementById("sx").innerText=scores.X;
+    document.getElementById("so").innerText=scores.O;
+    document.getElementById("status").innerText=current+" wins!";
+    gameOn=false;
     return;
   }
 
-  if (board.every(cell => cell !== "")) {
-    statusText.textContent = "Draw!";
-    gameActive = false;
+  if(board.every(c=>c)){
+    document.getElementById("status").innerText="Draw!";
+    gameOn=false;
     return;
   }
 
-  currentPlayer = currentPlayer === "X" ? "O" : "X";
-  statusText.textContent = currentPlayer + "'s turn";
+  current=current==="X"?"O":"X";
+  document.getElementById("status").innerText=current+"'s turn";
 
-  if (mode === "computer" && currentPlayer === "O") {
-    setTimeout(computerMove, 500);
+  if(mode==="ai" && current==="O") setTimeout(aiMove,400);
+}
+
+/* ---------- CHECK ---------- */
+const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function check(p){
+  for(let w of wins){
+    if(w.every(i=>board[i]===p)){
+      drawWinLine(w[0],w[2]);
+      return true;
+    }
   }
+  return false;
 }
 
-function computerMove() {
-  let emptyCells = board
-    .map((val, i) => val === "" ? i : null)
-    .filter(v => v !== null);
-
-  let move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-  handleMove(move);
+/* ---------- RESET ---------- */
+function reset(){
+  board.fill("");
+  current="X";
+  tiles.forEach(t=>t.material.color.setHex(0x222244));
+  if(winLine) scene.remove(winLine);
 }
 
-function checkWin(player) {
-  return winPatterns.some(pattern =>
-    pattern.every(index => board[index] === player)
-  );
+/* ---------- RENDER ---------- */
+function animate(){
+  requestAnimationFrame(animate);
+  scene.rotation.y+=0.002;
+  renderer.render(scene,camera);
 }
-
-function resetGame() {
-  board = Array(9).fill("");
-  currentPlayer = "X";
-  gameActive = true;
-  createBoard();
-  statusText.textContent = "X's turn";
-}
-
-createBoard();
+animate();
 </script>
 
 </body>
