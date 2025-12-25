@@ -114,13 +114,95 @@ function click(i){
 
 function showHints(i){
   hints=[];
-  let r=Math.floor(i/8), c=i%8;
-  [[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{
-    let nr=r+d[0], nc=c+d[1];
-    if(nr>=0&&nr<8&&nc>=0&&nc<8){
-      hints.push(nr*8+nc);
+  let piece = pieces[i];
+  let r = Math.floor(i/8);
+  let c = i % 8;
+
+  const inside = (x,y)=>x>=0 && x<8 && y>=0 && y<8;
+  const idx = (x,y)=>x*8+y;
+
+  // PAWN (WHITE)
+  if(piece==="♙"){
+    if(inside(r-1,c) && pieces[idx(r-1,c)]===""){
+      hints.push(idx(r-1,c));
     }
-  });
+  }
+
+  // ROOK
+  if(piece==="♖"||piece==="♜"){
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{
+      let x=r+d[0], y=c+d[1];
+      while(inside(x,y)){
+        if(pieces[idx(x,y)]===""){
+          hints.push(idx(x,y));
+        }else break;
+        x+=d[0]; y+=d[1];
+      }
+    });
+  }
+
+  // BISHOP
+  if(piece==="♗"||piece==="♝"){
+    [[1,1],[1,-1],[-1,1],[-1,-1]].forEach(d=>{
+      let x=r+d[0], y=c+d[1];
+      while(inside(x,y)){
+        if(pieces[idx(x,y)]===""){
+          hints.push(idx(x,y));
+        }else break;
+        x+=d[0]; y+=d[1];
+      }
+    });
+  }
+
+  // QUEEN
+  if(piece==="♕"||piece==="♛"){
+    showHintsFor("rook");
+    showHintsFor("bishop");
+  }
+
+  // KNIGHT
+  if(piece==="♘"||piece==="♞"){
+    [[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]]
+    .forEach(m=>{
+      let x=r+m[0], y=c+m[1];
+      if(inside(x,y)) hints.push(idx(x,y));
+    });
+  }
+
+  // KING
+  if(piece==="♔"||piece==="♚"){
+    for(let dx=-1;dx<=1;dx++){
+      for(let dy=-1;dy<=1;dy++){
+        if(dx||dy){
+          let x=r+dx,y=c+dy;
+          if(inside(x,y)) hints.push(idx(x,y));
+        }
+      }
+    }
+  }
+
+  function showHintsFor(type){
+    if(type==="rook"){
+      [[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{
+        let x=r+d[0],y=c+d[1];
+        while(inside(x,y)){
+          if(pieces[idx(x,y)]==="")hints.push(idx(x,y));
+          else break;
+          x+=d[0];y+=d[1];
+        }
+      });
+    }
+    if(type==="bishop"){
+      [[1,1],[1,-1],[-1,1],[-1,-1]].forEach(d=>{
+        let x=r+d[0],y=c+d[1];
+        while(inside(x,y)){
+          if(pieces[idx(x,y)]==="")hints.push(idx(x,y));
+          else break;
+          x+=d[0];y+=d[1];
+        }
+      });
+    }
+  }
 }
 
 draw();
