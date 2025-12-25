@@ -61,9 +61,11 @@ button{
 <button onclick="location.href='../index.html'">Back</button>
 
 <script>
-const boardEl = document.getElementById("board");
+const board = document.getElementById("board");
 
-const pieces = [
+let selected = null;
+
+let pieces = [
 "♜","♞","♝","♛","♚","♝","♞","♜",
 "♟","♟","♟","♟","♟","♟","♟","♟",
 "","","","","","","","",
@@ -74,19 +76,37 @@ const pieces = [
 "♖","♘","♗","♕","♔","♗","♘","♖"
 ];
 
-function draw(){
-  boardEl.innerHTML="";
-  pieces.forEach((p,i)=>{
-    const sq=document.createElement("div");
-    sq.className="square "+((Math.floor(i/8)+i)%2?"dark":"light");
-    sq.textContent=p;
-    boardEl.appendChild(sq);
+function drawBoard(){
+  board.innerHTML = "";
+  pieces.forEach((piece, i) => {
+    const sq = document.createElement("div");
+    sq.className = "square " + ((Math.floor(i/8)+i)%2 ? "dark":"light");
+    sq.textContent = piece;
+
+    sq.onclick = () => handleClick(i);
+
+    board.appendChild(sq);
   });
 }
 
-function reset(){ draw(); }
+function handleClick(i){
+  if(selected === null){
+    if(pieces[i] !== ""){
+      selected = i;
+    }
+  } else {
+    pieces[i] = pieces[selected];
+    pieces[selected] = "";
+    selected = null;
+    drawBoard();
+  }
+}
 
-draw();
+function reset(){
+  location.reload();
+}
+
+drawBoard();
 </script>
 
 </body>
