@@ -20,23 +20,33 @@ h2 { margin: 10px; }
 
 #board {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(8, 40px);
+  grid-template-rows: repeat(8, 40px);
   width: 320px;
   height: 320px;
-  border-radius: 8px;
-  overflow: hidden;
+  margin: 20px auto;
+  border: 2px solid #22d3ee;
 }
 
 .square {
+  width: 40px;
+  height: 40px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 26px;
+  justify-content: center;
+  font-size: 28px;
   cursor: pointer;
 }
 
-.light { background: #e5e7eb; color: black; }
-.dark  { background: #374151; }
+.light {
+  background: #e5e7eb;
+  color: #000;
+}
+
+.dark {
+  background: #374151;
+  color: #fff;
+}
 
 #status {
   margin: 10px;
