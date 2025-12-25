@@ -20,35 +20,36 @@ h2 { margin: 10px; }
 
 #board {
   display: grid;
-  grid-template-columns: repeat(8, 40px);
-  grid-template-rows: repeat(8, 40px);
+  grid-template-columns: repeat(8, 1fr);
   width: 320px;
   height: 320px;
-  margin: 20px auto;
-  border: 2px solid #22d3ee;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .square {
-  width: 40px;
-  height: 40px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 28px;
+  align-items: center;
+  font-size: 26px;
   cursor: pointer;
-  user-select: none;
 }
 
-.light {
-  background: #e5e7eb;
-  color: #000;        /* BLACK pieces visible */
+.light { background: #e5e7eb; color: black; }
+.dark  { background: #374151; }
+
+#status {
+  margin: 10px;
 }
 
-.dark {
-  background: #374151;
-  color: #fff;        /* WHITE pieces visible */
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #22d3ee;
+  font-weight: bold;
+  cursor: pointer;
 }
-  
 </style>
 </head>
 
@@ -58,7 +59,7 @@ h2 { margin: 10px; }
 <div id="board"></div>
 <div id="status">Your move (White)</div>
 <button onclick="resetGame()">Restart</button>
-<button onclick="location.href='../index.html'">Back</button>
+<button onclick="location.href='index.html'">Back</button>
 
 <script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/chess.min.js"></script>
 
@@ -88,47 +89,4 @@ function drawBoard() {
         const key = piece.color === "w"
           ? piece.type.toUpperCase()
           : piece.type;
-        sq.textContent = pieces[key];
-      }
-      sq.onclick = () => onSquareClick(square);
-      boardEl.appendChild(sq);
-    });
-  });
-}
-
-function onSquareClick(square) {
-  if (!selected) {
-    selected = square;
-    return;
-  }
-
-  const move = game.move({ from: selected, to: square, promotion: "q" });
-  selected = null;
-
-  if (move) {
-    drawBoard();
-    statusEl.textContent = "AI thinking...";
-    setTimeout(aiMove, 300);
-  }
-}
-
-function aiMove() {
-  const moves = game.moves();
-  if (moves.length === 0) return;
-  const move = moves[Math.floor(Math.random() * moves.length)];
-  game.move(move);
-  drawBoard();
-  statusEl.textContent = "Your move (White)";
-}
-
-function resetGame() {
-  game.reset();
-  drawBoard();
-  statusEl.textContent = "Your move (White)";
-}
-
-drawBoard();
-</script>
-
-</body>
-</html>
+        sq.text
