@@ -1,169 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>3D Snake Game - High Graphics</title>
-    <style>body { margin: 0; overflow: hidden; background: #000; }</style>
+<meta charset="UTF-8">
+<title>Snake Game 2D</title>
+<style>
+body{
+  margin:0;
+  background:#0b0f1a;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  font-family:Arial;
+}
+h1{margin:15px;}
+canvas{
+  background:#111;
+  border:3px solid cyan;
+}
+.score{
+  margin:10px;
+  font-size:18px;
+}
+.controls{
+  display:grid;
+  grid-template-columns:60px 60px 60px;
+  gap:10px;
+  margin-top:10px;
+}
+.controls button{
+  padding:10px;
+  background:cyan;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
 </head>
+
 <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script>
-        // Scene setup [web:11]
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        document.body.appendChild(renderer.domElement);
 
-        // Controls
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
+<h1>🐍 Snake Game</h1>
+<div class="score">Score: <span id="score">0</span></div>
 
-        // Lighting for high graphics
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(10, 10, 5);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
-        scene.add(directionalLight);
+<canvas id="game" width="400" height="400"></canvas>
 
-        // Game variables
-        const snake = [];
-        const food = new THREE.Mesh();
-        let direction = new THREE.Vector3(1, 0, 0);
-        let score = 0;
-        const gridSize = 20;
-        const segmentSize = 0.8;
+<div class="controls">
+  <div></div>
+  <button onclick="setDir(0,-1)">⬆</button>
+  <div></div>
+  <button onclick="setDir(-1,0)">⬅</button>
+  <button onclick="restart()">🔄</button>
+  <button onclick="setDir(1,0)">➡</button>
+  <div></div>
+  <button onclick="setDir(0,1)">⬇</button>
+  <div></div>
+</div>
 
-        // Create snake segment material (glowing)
-        const snakeMaterial = new THREE.MeshPhongMaterial({ 
-            color: 0x00ff88, 
-            shininess: 100,
-            emissive: 0x004400 
-        });
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const box = 20;
 
-        // Initialize snake
-        function initSnake() {
-            for (let i = 0; i < 3; i++) {
-                const geometry = new THREE.BoxGeometry(segmentSize, segmentSize, segmentSize);
-                const segment = new THREE.Mesh(geometry, snakeMaterial);
-                segment.position.x = -i * 1.1;
-                segment.castShadow = true;
-                segment.receiveShadow = true;
-                scene.add(segment);
-                snake.push(segment);
-            }
-        }
+let snake, food, dx, dy, score, game;
 
-        // Food with particles
-        function createFood() {
-            const geometry = new THREE.SphereGeometry(0.5, 16, 16);
-            const material = new THREE.MeshPhongMaterial({ 
-                color: 0xff4444, 
-                emissive: 0x440000 
-            });
-            food.geometry.dispose();
-            food.material.dispose();
-            food.geometry = geometry;
-            food.material = material;
-            food.position.set(
-                Math.floor(Math.random() * gridSize) - gridSize / 2,
-                0,
-                Math.floor(Math.random() * gridSize) - gridSize / 2
-            );
-            food.castShadow = true;
-            scene.add(food);
-        }
+function start(){
+  snake = [{x:200,y:200}];
+  food = spawnFood();
+  dx = box;
+  dy = 0;
+  score = 0;
+  document.getElementById("score").innerText = score;
+  clearInterval(game);
+  game = setInterval(draw,120);
+}
 
-        // Update snake
-        function updateSnake() {
-            const head = snake[0];
-            const newHeadPos = head.position.clone().add(direction);
+function spawnFood(){
+  return {
+    x:Math.floor(Math.random()*20)*box,
+    y:Math.floor(Math.random()*20)*box
+  }
+}
 
-            // Wall collision
-            if (Math.abs(newHeadPos.x) > gridSize / 2 || Math.abs(newHeadPos.z) > gridSize / 2) return gameOver();
+function draw(){
+  ctx.clearRect(0,0,400,400);
 
-            // Self collision
-            for (let segment of snake) {
-                if (head.position.distanceTo(newHeadPos) < 1) return gameOver();
-            }
+  // food
+  ctx.fillStyle="red";
+  ctx.fillRect(food.x,food.y,box,box);
 
-            // Food collision
-            if (head.position.distanceTo(food.position) < 1) {
-                score += 10;
-                createFood();
-                // Grow snake
-                const geometry = new THREE.BoxGeometry(segmentSize, segmentSize, segmentSize);
-                const newSegment = new THREE.Mesh(geometry, snakeMaterial);
-                newSegment.position.copy(snake[snake.length - 1].position);
-                newSegment.castShadow = true;
-                newSegment.receiveShadow = true;
-                scene.add(newSegment);
-                snake.push(newSegment);
-            }
+  // snake
+  ctx.fillStyle="lime";
+  snake.forEach(p=>ctx.fillRect(p.x,p.y,box,box));
 
-            // Move segments
-            for (let i = snake.length - 1; i > 0; i--) {
-                snake[i].position.copy(snake[i - 1].position);
-            }
-            head.position.copy(newHeadPos);
-        }
+  let head = {x:snake[0].x+dx,y:snake[0].y+dy};
 
-        // Game over
-        function gameOver() {
-            alert(`Game Over! Score: ${score}`);
-            location.reload();
-        }
+  // wall or self collision
+  if(
+    head.x<0||head.y<0||
+    head.x>=400||head.y>=400||
+    snake.some(p=>p.x==head.x&&p.y==head.y)
+  ){
+    alert("Game Over!");
+    start();
+    return;
+  }
 
-        // Controls
-        const keys = {};
-        document.addEventListener('keydown', (e) => {
-            keys[e.code] = true;
-            switch(e.code) {
-                case 'ArrowUp': if (direction.z !== 1) direction.set(0, 0, -1); break;
-                case 'ArrowDown': if (direction.z !== -1) direction.set(0, 0, 1); break;
-                case 'ArrowLeft': if (direction.x !== 1) direction.set(-1, 0, 0); break;
-                case 'ArrowRight': if (direction.x !== -1) direction.set(1, 0, 0); break;
-            }
-        });
+  snake.unshift(head);
 
-        // Score display
-        const scoreElement = document.createElement('div');
-        scoreElement.style.position = 'absolute';
-        scoreElement.style.top = '10px';
-        scoreElement.style.left = '10px';
-        scoreElement.style.color = 'white';
-        scoreElement.style.fontSize = '24px';
-        scoreElement.style.fontFamily = 'Arial';
-        document.body.appendChild(scoreElement);
+  if(head.x==food.x && head.y==food.y){
+    score++;
+    document.getElementById("score").innerText = score;
+    food = spawnFood();
+  }else{
+    snake.pop();
+  }
+}
 
-        // Initialize
-        initSnake();
-        createFood();
-        camera.position.set(0, 15, 15);
-        camera.lookAt(0, 0, 0);
+function setDir(x,y){
+  if(dx==-x && dy==-y) return;
+  dx=x*box;
+  dy=y*box;
+}
 
-        // Game loop
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            updateSnake();
-            scoreElement.textContent = `Score: ${score}`;
-            renderer.render(scene, camera);
-        }
-        animate();
+function restart(){
+  start();
+}
 
-        // Resize handler
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
+// keyboard
+document.addEventListener("keydown",e=>{
+  if(e.key=="ArrowUp") setDir(0,-1);
+  if(e.key=="ArrowDown") setDir(0,1);
+  if(e.key=="ArrowLeft") setDir(-1,0);
+  if(e.key=="ArrowRight") setDir(1,0);
+});
+
+start();
+</script>
+
 </body>
 </html>
-
