@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chess vs AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #020617, #000);
+  color: white;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+h2 {
+  margin-bottom: 15px;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(8, 40px);
+  grid-template-rows: repeat(8, 40px);
+  width: 320px;
+  height: 320px;
+  border: 2px solid #22d3ee;
+}
+
+.square {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.light {
+  background: #e5e7eb;
+  color: #000;
+}
+
+.dark {
+  background: #374151;
+  color: #fff;
+}
+
+#status {
+  margin: 12px;
+}
+
+button {
+  margin: 4px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #22d3ee;
+  font-weight: bold;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Chess vs AI</h2>
+
+<div id="board"></div>
+
+<div id="status">Your move (White)</div>
+
+<button onclick="resetGame()">Restart</button>
+<button onclick="location.href='../index.html'">Back</button>
+
+<script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/chess.min.js"></script>
+
+<script>
+const game = new Chess();
+const boardEl = document.getElementById("board");
+const statusEl = document.getElementById("status");
+
+let selected = null;
+
+const symbols = {
+  p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚",
+  P: "♙", R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔"
+};
+
+function drawBoard() {
+  boardEl.innerHTML = "";
+  const board = game.board();
+
+  board.forEach((row, r) => {
+    row.forEach((piece, c) => {
+      const sq = document.createElement("div");
+      sq.className = "square " + ((r + c) % 2 ? "dark" : "light");
+
+      const square = "abcdefgh"[c] + (8 - r);
+      sq.dataset.square = square;
+
+      if (piece) {
+        const key = piece.color === "w"
+          ? piece.type.toUpperCase()
+          : piece.type;
+        sq.textContent = symbols[key];
+      }
+
+      sq.onclick = () => handleClick(square);
+      boardEl.appendChild(sq);
+    });
+  });
+}
+
+function handleClick(square) {
+  if (!selected) {
+    selected = square;
+    return;
+  }
+
+  const move = game.move({
+    from: selected,
+    to: square,
+    promotion: "q"
+  });
+
+  selected = null;
+
+  if (move) {
+    drawBoard();
+    statusEl.textContent = "AI thinking...";
+    setTimeout(aiMove, 300);
+  }
+}
+
+function aiMove() {
+  const moves = game.moves();
+  if (moves.length === 0) return;
+
+  const move = moves[Math.floor(Math.random() * moves.length)];
+  game.move(move);
+
+  drawBoard();
+  statusEl.textContent = "Your move (White)";
+}
+
+function resetGame() {
+  game.reset();
+  drawBoard();
+  statusEl.textContent = "Your move (White)";
+}
+
+drawBoard();
+</script>
+
+</body>
+</html>
