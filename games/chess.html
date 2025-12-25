@@ -1,31 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Chess with AI</title>
+<meta charset="UTF-8">
+<title>2D Chess</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
   margin: 0;
-  background: #0f172a;
+  background: #020617;
   color: white;
   font-family: Arial;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-h1 { margin: 10px; }
-iframe {
-  width: 100%;
-  max-width: 500px;
-  height: 520px;
-  border: none;
-  border-radius: 12px;
-  background: black;
+
+h2 { margin: 10px; }
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: 320px;
+  height: 320px;
+  border-radius: 8px;
+  overflow: hidden;
 }
-button {
+
+.square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.light { background: #e5e7eb; color: black; }
+.dark  { background: #374151; }
+
+#status {
   margin: 10px;
-  padding: 10px 16px;
+}
+
+button {
+  padding: 8px 14px;
   border: none;
   border-radius: 6px;
   background: #22d3ee;
@@ -37,11 +55,81 @@ button {
 
 <body>
 
-<h1>Chess vs AI</h1>
+<h2>Chess vs AI</h2>
+<div id="board"></div>
+<div id="status">Your move (White)</div>
+<button onclick="resetGame()">Restart</button>
+<button onclick="location.href='index.html'">Back</button>
 
-<iframe src="https://www.chess.com/embed?theme=dark&boardColor=green"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/chess.min.js"></script>
 
-<button onclick="location.href='index.html'">⬅ Back to Games</button>
+<script>
+const game = new Chess();
+const boardEl = document.getElementById("board");
+const statusEl = document.getElementById("status");
+
+let selected = null;
+
+const pieces = {
+  p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚",
+  P: "♙", R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔"
+};
+
+function drawBoard() {
+  boardEl.innerHTML = "";
+  const board = game.board();
+
+  board.forEach((row, r) => {
+    row.forEach((piece, c) => {
+      const sq = document.createElement("div");
+      sq.className = "square " + ((r + c) % 2 ? "dark" : "light");
+      const square = "abcdefgh"[c] + (8 - r);
+      sq.dataset.square = square;
+      if (piece) {
+        const key = piece.color === "w"
+          ? piece.type.toUpperCase()
+          : piece.type;
+        sq.textContent = pieces[key];
+      }
+      sq.onclick = () => onSquareClick(square);
+      boardEl.appendChild(sq);
+    });
+  });
+}
+
+function onSquareClick(square) {
+  if (!selected) {
+    selected = square;
+    return;
+  }
+
+  const move = game.move({ from: selected, to: square, promotion: "q" });
+  selected = null;
+
+  if (move) {
+    drawBoard();
+    statusEl.textContent = "AI thinking...";
+    setTimeout(aiMove, 300);
+  }
+}
+
+function aiMove() {
+  const moves = game.moves();
+  if (moves.length === 0) return;
+  const move = moves[Math.floor(Math.random() * moves.length)];
+  game.move(move);
+  drawBoard();
+  statusEl.textContent = "Your move (White)";
+}
+
+function resetGame() {
+  game.reset();
+  drawBoard();
+  statusEl.textContent = "Your move (White)";
+}
+
+drawBoard();
+</script>
 
 </body>
 </html>
