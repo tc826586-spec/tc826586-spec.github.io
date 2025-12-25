@@ -1,212 +1,259 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>2D Chess</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>Chess vs AI</title>
 <style>
-body{
-  margin:0;
-  min-height:100vh;
-  background:#020617;
-  color:white;
-  font-family:Arial;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-}
+  body{
+    margin:0;
+    background:#050814;
+    color:#fff;
+    font-family:Arial, sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  h1{margin:20px 0}
 
-.board{
-  display:grid;
-  grid-template-columns:repeat(8,50px);
-  width:400px;
-  margin:auto;
-}
-.square{
-  width:50px;
-  height:50px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:32px;
-  cursor:pointer;
-}
-.light{background:#eee}
-.dark{background:#555;color:white}
+  .mode button{
+    margin:5px;
+    padding:8px 14px;
+    background:#00e5ff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+  }
 
-.hint{
-  background:lime !important;
-}
-.selected{
-  outline:3px solid yellow;
-}
+  .board{
+    display:grid;
+    grid-template-columns:repeat(8,60px);
+    grid-template-rows:repeat(8,60px);
+    border:3px solid #00e5ff;
+    margin-top:20px;
+  }
 
-button{
-  margin:6px;
-  padding:8px 14px;
-  border:none;
-  border-radius:6px;
-  background:#22d3ee;
-  font-weight:bold;
-}
+  .cell{
+    width:60px;
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:36px;
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .white{background:#eee;color:#000}
+  .black{background:#555}
+  .hint{background:#00e5ff!important}
+
+  .controls{
+    margin:15px;
+  }
+  .controls button{
+    padding:8px 14px;
+    margin:5px;
+    background:#00e5ff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+  }
 </style>
 </head>
 
 <body>
 
-<h2>Chess vs AI</h2>
+<h1>Chess vs AI</h1>
 
-<div id="board" class="board"></div>
+<div class="mode">
+  <button onclick="setMode('manual')">2 Player</button>
+  <button onclick="setMode('ai')">Vs AI</button>
+</div>
 
-<div id="status">Your move</div>
+<div id="status">White's move</div>
 
-<button onclick="reset()">Restart</button>
-<button onclick="location.href='../index.html'">Back</button>
+<div class="board" id="board"></div>
+
+<div class="controls">
+  <button onclick="resetGame()">Restart</button>
+  <button onclick="location.href='../index.html'">Back</button>
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+let mode="manual";
+let turn="white";
+let selected=-1;
+let hints=[];
 
-const board = document.getElementById("board");
-let selected = null;
-let hints = [];
+const pieces={
+  r:"♜",n:"♞",b:"♝",q:"♛",k:"♚",p:"♟",
+  R:"♖",N:"♘",B:"♗",Q:"♕",K:"♔",P:"♙"
+};
 
-let pieces = [
-"♜","♞","♝","♛","♚","♝","♞","♜",
-"♟","♟","♟","♟","♟","♟","♟","♟",
+let board=[
+"r","n","b","q","k","b","n","r",
+"p","p","p","p","p","p","p","p",
 "","","","","","","","",
 "","","","","","","","",
 "","","","","","","","",
 "","","","","","","","",
-"♙","♙","♙","♙","♙","♙","♙","♙",
-"♖","♘","♗","♕","♔","♗","♘","♖"
+"P","P","P","P","P","P","P","P",
+"R","N","B","Q","K","B","N","R"
 ];
 
-function draw(){
-  board.innerHTML="";
-  pieces.forEach((p,i)=>{
-    const s=document.createElement("div");
-    s.className="square "+(((i+Math.floor(i/8))%2)?"dark":"light");
-    if(i===selected)s.classList.add("selected");
-    if(hints.includes(i))s.classList.add("hint");
-    s.textContent=p;
-    s.onclick=()=>click(i);
-    board.appendChild(s);
-  });
+const boardDiv=document.getElementById("board");
+
+function setMode(m){
+  mode=m;
+  resetGame();
 }
 
-function click(i){
-  if(selected===null && pieces[i]!==""){
-    selected=i;
-    showHints(i);
-  }else if(hints.includes(i)){
-    pieces[i]=pieces[selected];
-    pieces[selected]="";
-    selected=null;
-    hints=[];
-  }else{
-    selected=null;
-    hints=[];
-  }
-  draw();
-}
-
-function showHints(i){
+function resetGame(){
+  board=[
+  "r","n","b","q","k","b","n","r",
+  "p","p","p","p","p","p","p","p",
+  "","","","","","","","",
+  "","","","","","","","",
+  "","","","","","","","",
+  "","","","","","","","",
+  "P","P","P","P","P","P","P","P",
+  "R","N","B","Q","K","B","N","R"
+  ];
+  turn="white";
+  selected=-1;
   hints=[];
-  let piece = pieces[i];
-  let r = Math.floor(i/8);
-  let c = i % 8;
+  render();
+  updateStatus();
+}
 
-  const inside = (x,y)=>x>=0 && x<8 && y>=0 && y<8;
-  const idx = (x,y)=>x*8+y;
+function updateStatus(){
+  document.getElementById("status").innerText=
+    mode==="ai"
+    ? (turn==="white"?"Your move":"AI thinking...")
+    : (turn==="white"?"White's move":"Black's move");
+}
 
-  // PAWN (WHITE)
-  if(piece==="♙"){
-    if(inside(r-1,c) && pieces[idx(r-1,c)]===""){
-      hints.push(idx(r-1,c));
-    }
-  }
-
-  // ROOK
-  if(piece==="♖"||piece==="♜"){
-    [[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{
-      let x=r+d[0], y=c+d[1];
-      while(inside(x,y)){
-        if(pieces[idx(x,y)]===""){
-          hints.push(idx(x,y));
-        }else break;
-        x+=d[0]; y+=d[1];
-      }
-    });
-  }
-
-  // BISHOP
-  if(piece==="♗"||piece==="♝"){
-    [[1,1],[1,-1],[-1,1],[-1,-1]].forEach(d=>{
-      let x=r+d[0], y=c+d[1];
-      while(inside(x,y)){
-        if(pieces[idx(x,y)]===""){
-          hints.push(idx(x,y));
-        }else break;
-        x+=d[0]; y+=d[1];
-      }
-    });
-  }
-
-  // QUEEN
-  if(piece==="♕"||piece==="♛"){
-    showHintsFor("rook");
-    showHintsFor("bishop");
-  }
-
-  // KNIGHT
-  if(piece==="♘"||piece==="♞"){
-    [[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]]
-    .forEach(m=>{
-      let x=r+m[0], y=c+m[1];
-      if(inside(x,y)) hints.push(idx(x,y));
-    });
-  }
-
-  // KING
-  if(piece==="♔"||piece==="♚"){
-    for(let dx=-1;dx<=1;dx++){
-      for(let dy=-1;dy<=1;dy++){
-        if(dx||dy){
-          let x=r+dx,y=c+dy;
-          if(inside(x,y)) hints.push(idx(x,y));
-        }
-      }
-    }
-  }
-
-  function showHintsFor(type){
-    if(type==="rook"){
-      [[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{
-        let x=r+d[0],y=c+d[1];
-        while(inside(x,y)){
-          if(pieces[idx(x,y)]==="")hints.push(idx(x,y));
-          else break;
-          x+=d[0];y+=d[1];
-        }
-      });
-    }
-    if(type==="bishop"){
-      [[1,1],[1,-1],[-1,1],[-1,-1]].forEach(d=>{
-        let x=r+d[0],y=c+d[1];
-        while(inside(x,y)){
-          if(pieces[idx(x,y)]==="")hints.push(idx(x,y));
-          else break;
-          x+=d[0];y+=d[1];
-        }
-      });
-    }
+function render(){
+  boardDiv.innerHTML="";
+  for(let i=0;i<64;i++){
+    const c=document.createElement("div");
+    c.className="cell "+(((Math.floor(i/8)+i)%2)?"black":"white");
+    if(hints.includes(i)) c.classList.add("hint");
+    c.innerHTML=pieces[board[i]]||"";
+    c.onclick=()=>clickSquare(i);
+    boardDiv.appendChild(c);
   }
 }
 
-draw();
-});
+function clickSquare(i){
+  let piece=board[i];
+
+  if(selected===-1){
+    if(turn==="white" && "PNBRQK".includes(piece)){
+      selected=i; hints=getMoves(i);
+    }
+    if(turn==="black" && "pnbrqk".includes(piece)){
+      selected=i; hints=getMoves(i);
+    }
+    render(); return;
+  }
+
+  if(hints.includes(i)){
+    board[i]=board[selected];
+    board[selected]="";
+    selected=-1; hints=[];
+    turn=turn==="white"?"black":"white";
+    render(); updateStatus();
+
+    if(mode==="ai" && turn==="black"){
+      setTimeout(aiMove,400);
+    }
+  }else{
+    selected=-1; hints=[]; render();
+  }
+}
+
+function aiMove(){
+  let moves=[];
+  for(let i=0;i<64;i++){
+    if("pnbrqk".includes(board[i])){
+      getMoves(i).forEach(m=>moves.push({f:i,t:m}));
+    }
+  }
+  if(!moves.length) return;
+  let m=moves[Math.floor(Math.random()*moves.length)];
+  board[m.t]=board[m.f];
+  board[m.f]="";
+  turn="white";
+  render(); updateStatus();
+}
+
+function getMoves(i){
+  let p=board[i];
+  let r=Math.floor(i/8), c=i%8;
+  let res=[];
+  const dir=p==="P"?-1:p==="p"?1:0;
+
+  if(p==="P"||p==="p"){
+    let n=i+dir*8;
+    if(board[n]==="") res.push(n);
+  }
+
+  const knight=[[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]];
+  if("Nn".includes(p)){
+    knight.forEach(d=>{
+      let nr=r+d[0], nc=c+d[1];
+      if(nr>=0&&nr<8&&nc>=0&&nc<8){
+        let t=nr*8+nc;
+        if(board[t]===""||isEnemy(p,board[t])) res.push(t);
+      }
+    });
+  }
+
+  const lines={
+    B:[[1,1],[1,-1],[-1,1],[-1,-1]],
+    R:[[1,0],[-1,0],[0,1],[0,-1]],
+    Q:[[1,1],[1,-1],[-1,1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]]
+  };
+
+  if("BRQbrq".includes(p)){
+    let key=p.toUpperCase();
+    lines[key].forEach(d=>{
+      let nr=r+d[0], nc=c+d[1];
+      while(nr>=0&&nr<8&&nc>=0&&nc<8){
+        let t=nr*8+nc;
+        if(board[t]==="") res.push(t);
+        else{
+          if(isEnemy(p,board[t])) res.push(t);
+          break;
+        }
+        nr+=d[0]; nc+=d[1];
+      }
+    });
+  }
+
+  if("Kk".includes(p)){
+    for(let dr=-1;dr<=1;dr++)
+      for(let dc=-1;dc<=1;dc++){
+        if(dr||dc){
+          let nr=r+dr,nc=c+dc;
+          if(nr>=0&&nr<8&&nc>=0&&nc<8){
+            let t=nr*8+nc;
+            if(board[t]===""||isEnemy(p,board[t])) res.push(t);
+          }
+        }
+      }
+  }
+
+  return res;
+}
+
+function isEnemy(a,b){
+  return (a===a.toUpperCase()) !== (b===b.toUpperCase());
+}
+
+resetGame();
 </script>
 
 </body>
