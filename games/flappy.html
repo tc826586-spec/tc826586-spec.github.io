@@ -6,24 +6,26 @@
 <title>Flappy Bird</title>
 
 <style>
-body{
+html,body{
   margin:0;
+  padding:0;
+  height:100%;
+}
+body{
   background:#70c5ce;
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
   font-family:Arial,Helvetica,sans-serif;
 }
 canvas{
   background:#70c5ce;
   border-radius:10px;
 }
-#info{
+#hint{
   position:absolute;
-  top:20px;
-  color:#fff;
-  font-size:18px;
+  top:15px;
+  color:white;
   font-weight:bold;
 }
 </style>
@@ -31,149 +33,126 @@ canvas{
 
 <body>
 
-<div id="info">Click / Tap / Space to Fly</div>
-<canvas id="game" width="360" height="520"></canvas>
+<div id="hint">Tap / Click / Space</div>
+<canvas id="c" width="360" height="520"></canvas>
 
 <script>
-const canvas = document.getElementById("game");
+const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
 
-let frames = 0;
-let score = 0;
-let gameOver = false;
+let bird, pipes, frame, score, gameOver;
 
-/* BIRD */
-const bird = {
-  x: 60,
-  y: 200,
-  w: 34,
-  h: 24,
-  gravity: 0.5,
-  jump: 8,
-  speed: 0,
-  draw(){
-    ctx.fillStyle = "#ff0";
-    ctx.fillRect(this.x, this.y, this.w, this.h);
-  },
-  flap(){
-    this.speed = -this.jump;
-  },
-  update(){
-    this.speed += this.gravity;
-    this.y += this.speed;
-    if(this.y + this.h >= canvas.height){
-      gameOver = true;
-    }
-    if(this.y <= 0){
-      this.y = 0;
-      this.speed = 0;
-    }
-  }
-};
-
-/* PIPES */
-const pipes = [];
-const gap = 140;
-
-function addPipe(){
-  const top = Math.random() * 200 + 40;
-  pipes.push({
-    x: canvas.width,
-    top: top,
-    bottom: top + gap,
-    w: 50
-  });
+/* RESET GAME */
+function reset(){
+  bird = { x:60, y:200, v:0 };
+  pipes = [];
+  frame = 0;
+  score = 0;
+  gameOver = false;
 }
 
-/* DRAW */
+/* DRAW BIRD */
+function drawBird(){
+  ctx.fillStyle="yellow";
+  ctx.fillRect(bird.x, bird.y, 34, 24);
+}
+
+/* DRAW PIPES */
 function drawPipes(){
-  ctx.fillStyle = "#0f0";
+  ctx.fillStyle="green";
   pipes.forEach(p=>{
-    ctx.fillRect(p.x, 0, p.w, p.top);
-    ctx.fillRect(p.x, p.bottom, p.w, canvas.height);
+    ctx.fillRect(p.x,0,50,p.top);
+    ctx.fillRect(p.x,p.bottom,50,canvas.height);
   });
 }
 
 /* UPDATE */
-function updatePipes(){
+function update(){
+  if(gameOver) return;
+
+  bird.v += 0.5;
+  bird.y += bird.v;
+
+  if(bird.y < 0) bird.y = 0;
+  if(bird.y + 24 > canvas.height) gameOver = true;
+
+  if(frame % 90 === 0){
+    let gap = 140;
+    let top = Math.random()*200 + 40;
+    pipes.push({
+      x:canvas.width,
+      top:top,
+      bottom:top + gap,
+      passed:false
+    });
+  }
+
   pipes.forEach(p=>{
     p.x -= 2;
 
     if(
-      bird.x < p.x + p.w &&
-      bird.x + bird.w > p.x &&
-      (bird.y < p.top || bird.y + bird.h > p.bottom)
+      bird.x < p.x + 50 &&
+      bird.x + 34 > p.x &&
+      (bird.y < p.top || bird.y + 24 > p.bottom)
     ){
       gameOver = true;
     }
 
-    if(p.x + p.w === bird.x){
+    if(!p.passed && p.x + 50 < bird.x){
       score++;
+      p.passed = true;
     }
   });
 
-  if(pipes.length && pipes[0].x + pipes[0].w < 0){
-    pipes.shift();
-  }
-
-  if(frames % 90 === 0){
-    addPipe();
-  }
+  pipes = pipes.filter(p=>p.x > -60);
 }
 
-/* SCORE */
-function drawScore(){
-  ctx.fillStyle="#fff";
-  ctx.font="28px Arial";
-  ctx.fillText(score, canvas.width/2-10, 40);
-}
-
-/* GAME LOOP */
-function loop(){
+/* DRAW */
+function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  if(!gameOver){
-    bird.update();
-    updatePipes();
-  }
-
   drawPipes();
-  bird.draw();
-  drawScore();
+  drawBird();
+
+  ctx.fillStyle="white";
+  ctx.font="28px Arial";
+  ctx.fillText(score, canvas.width/2-10, 40);
 
   if(gameOver){
-    ctx.fillStyle="rgba(0,0,0,0.6)";
+    ctx.fillStyle="rgba(0,0,0,.6)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle="#fff";
+    ctx.fillStyle="white";
     ctx.font="24px Arial";
-    ctx.fillText("Game Over", 110, 240);
+    ctx.fillText("Game Over",110,240);
     ctx.font="16px Arial";
-    ctx.fillText("Click to Restart", 115, 270);
-    return;
+    ctx.fillText("Tap to Restart",115,270);
   }
+}
 
-  frames++;
+/* LOOP */
+function loop(){
+  frame++;
+  update();
+  draw();
   requestAnimationFrame(loop);
 }
 
 /* CONTROLS */
-document.addEventListener("keydown", e=>{
-  if(e.code === "Space"){
-    bird.flap();
+function flap(){
+  if(gameOver){
+    reset();
   }
-});
+  bird.v = -8;
+}
 
-canvas.addEventListener("mousedown", ()=>{
-  if(gameOver) location.reload();
-  bird.flap();
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space") flap();
 });
-
-canvas.addEventListener("touchstart", ()=>{
-  if(gameOver) location.reload();
-  bird.flap();
-});
+canvas.addEventListener("mousedown",flap);
+canvas.addEventListener("touchstart",flap);
 
 /* START */
+reset();
 loop();
 </script>
 
