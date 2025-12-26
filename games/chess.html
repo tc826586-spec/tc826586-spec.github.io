@@ -1,115 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Real Chess 2D - Gaming Adda</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div id="chessContainer" style="display:flex;flex-direction:column;align-items:center;">
+  <div id="board" style="width:320px;"></div>
+  <div id="status" style="margin-top:10px;"></div>
+</div>
 
-<!-- Chessboard CSS -->
+<!-- REQUIRED CSS -->
 <link rel="stylesheet" href="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 
-<style>
-body{
-  background:#0b0f2a;
-  color:white;
-  font-family:Arial, sans-serif;
-  text-align:center;
-}
-#board{
-  width:350px;
-  margin:20px auto;
-}
-#status{
-  margin-top:15px;
-  font-size:18px;
-}
-button{
-  margin-top:10px;
-  padding:8px 15px;
-  border:none;
-  border-radius:6px;
-  background:#00eaff;
-  cursor:pointer;
-}
-</style>
-</head>
-<body>
-
-<h1>♟ Real Chess 2D</h1>
-
-<div id="board"></div>
-<div id="status"></div>
-
-<button onclick="resetGame()">Restart Game</button>
-
-<!-- Chess Logic -->
+<!-- REQUIRED JS -->
 <script src="https://unpkg.com/chess.js@0.12.0/chess.min.js"></script>
-
-<!-- Chessboard UI -->
 <script src="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 
 <script>
-var board = null
-var game = new Chess()
+document.addEventListener("DOMContentLoaded", function () {
 
-function onDragStart (source, piece) {
-  if (game.game_over()) return false
-  if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-    return false
-  }
-}
+  let game = new Chess();
+  let board = Chessboard('board', {
+    draggable: true,
+    position: 'start',
 
-function onDrop (source, target) {
-  var move = game.move({
-    from: source,
-    to: target,
-    promotion: 'q'
-  })
+    onDragStart: function (source, piece) {
+      if (game.game_over()) return false;
+      if (
+        (game.turn() === 'w' && piece.startsWith('b')) ||
+        (game.turn() === 'b' && piece.startsWith('w'))
+      ) {
+        return false;
+      }
+    },
 
-  if (move === null) return 'snapback'
-  updateStatus()
-}
+    onDrop: function (source, target) {
+      let move = game.move({
+        from: source,
+        to: target,
+        promotion: 'q'
+      });
 
-function onSnapEnd () {
-  board.position(game.fen())
-}
+      if (move === null) return 'snapback';
+      updateStatus();
+    },
 
-function updateStatus () {
-  var status = ''
-  var moveColor = game.turn() === 'w' ? 'White' : 'Black'
-
-  if (game.in_checkmate()) {
-    status = 'Game over, ' + moveColor + ' is in CHECKMATE.'
-  } else if (game.in_draw()) {
-    status = 'Game over, DRAW.'
-  } else {
-    status = moveColor + ' to move'
-    if (game.in_check()) {
-      status += ' (CHECK)'
+    onSnapEnd: function () {
+      board.position(game.fen());
     }
+  });
+
+  function updateStatus() {
+    let status = '';
+    let moveColor = game.turn() === 'w' ? 'White' : 'Black';
+
+    if (game.in_checkmate()) {
+      status = `Game Over – ${moveColor} is checkmated`;
+    } else if (game.in_draw()) {
+      status = 'Game Draw';
+    } else {
+      status = `${moveColor} to move`;
+      if (game.in_check()) status += ' (Check)';
+    }
+
+    document.getElementById('status').innerText = status;
   }
 
-  document.getElementById('status').innerHTML = status
-}
+  updateStatus();
 
-var config = {
-  draggable: true,
-  position: 'start',
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onSnapEnd: onSnapEnd
-}
+  window.restartChess = function () {
+    game.reset();
+    board.start();
+    updateStatus();
+  };
 
-board = Chessboard('board', config)
-updateStatus()
-
-function resetGame(){
-  game.reset()
-  board.start()
-  updateStatus()
-}
+});
 </script>
-
-</body>
-</html>
