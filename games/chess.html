@@ -1,26 +1,26 @@
 <!-- CHESS CONTAINER -->
 <div style="display:flex;flex-direction:column;align-items:center;">
   <div id="board" style="width:320px;"></div>
-  <div id="status" style="margin-top:10px;"></div>
+  <div id="status" style="margin-top:10px;font-weight:bold;"></div>
   <button onclick="resetGame()" style="margin-top:10px;">Restart Game</button>
 </div>
 
-<!-- 1️⃣ LOAD CSS FIRST -->
+<!-- LOAD CSS -->
 <link rel="stylesheet"
 href="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
 
-<!-- 2️⃣ LOAD LIBRARIES (ORDER MATTERS!) -->
+<!-- LOAD LIBRARIES (ORDER IS IMPORTANT) -->
 <script src="https://unpkg.com/chess.js@0.12.0/chess.min.js"></script>
 <script src="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 
-<!-- 3️⃣ CHESS SCRIPT -->
 <script>
 let board;
 let game;
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  game = chess.html();
+  // ✅ FIX: correct initialization
+  game = new Chess();
 
   board = Chessboard('board', {
     draggable: true,
@@ -28,10 +28,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     onDragStart: function (source, piece) {
       if (game.game_over()) return false;
+
+      // allow moves only for correct color
       if (
         (game.turn() === 'w' && piece.startsWith('b')) ||
         (game.turn() === 'b' && piece.startsWith('w'))
-      ) return false;
+      ) {
+        return false;
+      }
     },
 
     onDrop: function (source, target) {
