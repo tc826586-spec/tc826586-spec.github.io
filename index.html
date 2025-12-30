@@ -7,7 +7,76 @@
 <meta charset="UTF-8">
 <title>Gaming Adda</title>
 
-<style>
+  <style>
+/* ===== GAMING ANIMATIONS ===== */
+body {
+  background: radial-gradient(circle at top, #0b1220, #000);
+  overflow-x: hidden;
+}
+
+/* Page Entry */
+.page-enter {
+  animation: pageIn 1.2s ease-out forwards;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Glow Buttons */
+button, .play-btn {
+  position: relative;
+  overflow: hidden;
+}
+button::after, .play-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(0,255,255,.4), transparent);
+  opacity: 0;
+  transition: .4s;
+}
+button:hover::after {
+  opacity: 1;
+}
+
+/* Game Card Hover */
+.game-card {
+  transition: transform .4s, box-shadow .4s;
+}
+.game-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 0 30px rgba(0,255,255,.6);
+}
+
+/* Floating Animation */
+.float {
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Fade-in on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: 1s;
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Background Particles */
+#particles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+</style>
+
 /* ===== ENTRY SCREEN ===== */
 #entryScreen {
   position: fixed;
@@ -162,7 +231,52 @@ document.querySelectorAll("a").forEach(link=>{
 });
 </script>
 
+  <script>
+// ===== PARTICLE BACKGROUND =====
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let particles = Array.from({length:80}, () => ({
+  x: Math.random()*canvas.width,
+  y: Math.random()*canvas.height,
+  r: Math.random()*2+1,
+  dx:(Math.random()-.5)*0.6,
+  dy:(Math.random()-.5)*0.6
+}));
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="rgba(0,255,255,.6)";
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+    p.x+=p.dx; p.y+=p.dy;
+    if(p.x<0||p.x>canvas.width) p.dx*=-1;
+    if(p.y<0||p.y>canvas.height) p.dy*=-1;
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ===== SCROLL REVEAL =====
+window.addEventListener("scroll",()=>{
+  document.querySelectorAll(".reveal").forEach(el=>{
+    if(el.getBoundingClientRect().top < innerHeight-100){
+      el.classList.add("active");
+    }
+  });
+});
+
+// Page entry
+document.body.classList.add("page-enter");
+</script>
+
 <body>
+
+  <canvas id="particles"></canvas>
 
 <!-- ENTRY ANIMATION -->
 <div id="entryScreen">
