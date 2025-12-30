@@ -236,5 +236,129 @@ function closeGame(){
 }
 </script>
 
+  <!-- ===== ENHANCEMENT LAYER (NO DESIGN CHANGE) ===== -->
+
+<style>
+/* Smooth animations */
+.game-card, button {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.game-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+button:hover {
+  transform: scale(1.05);
+}
+
+/* Dark / Light Toggle */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #00ffff;
+  color: #000;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+/* Game Preview Modal */
+.preview-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+.preview-box {
+  background: #111;
+  padding: 20px;
+  border-radius: 16px;
+  width: 300px;
+  text-align: center;
+}
+.preview-box img {
+  width: 100%;
+  border-radius: 12px;
+}
+.preview-box button {
+  margin-top: 12px;
+}
+
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #aaa;
+}
+</style>
+
+<button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+
+<div class="preview-modal" id="previewModal">
+  <div class="preview-box">
+    <img id="previewImg">
+    <h3 id="previewTitle"></h3>
+    <button onclick="startGame()">Play Now</button>
+    <br><br>
+    <button onclick="closePreview()">Close</button>
+  </div>
+</div>
+
+<footer class="site-footer">
+  © 2025 Gaming Adda |
+  <a href="#" style="color:#0ff">Privacy</a> |
+  <a href="#" style="color:#0ff">Terms</a> |
+  <a href="#" style="color:#0ff">Contact</a>
+</footer>
+
+<script>
+let currentGameURL = "";
+
+/* Preview before play */
+document.querySelectorAll(".play-btn").forEach(btn => {
+  btn.addEventListener("click", e => {
+    e.preventDefault();
+    const card = btn.closest(".game-card");
+    document.getElementById("previewTitle").innerText =
+      card.querySelector("h3").innerText;
+    document.getElementById("previewImg").src =
+      card.querySelector("img").src;
+    currentGameURL = btn.href;
+    document.getElementById("previewModal").style.display = "flex";
+  });
+});
+
+function startGame() {
+  window.location.href = currentGameURL;
+}
+
+function closePreview() {
+  document.getElementById("previewModal").style.display = "none";
+}
+
+/* Dark / Light */
+function toggleTheme() {
+  document.body.classList.toggle("light-mode");
+}
+
+/* Recent Played Games */
+function saveRecent(game) {
+  let games = JSON.parse(localStorage.getItem("recentGames")) || [];
+  games.unshift(game);
+  games = games.slice(0, 5);
+  localStorage.setItem("recentGames", JSON.stringify(games));
+}
+</script>
+
+<!-- ===== END ENHANCEMENT ===== -->
+
 </body>
 </html>
