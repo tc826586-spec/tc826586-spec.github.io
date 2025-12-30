@@ -2,168 +2,160 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>2D Chess</title>
+<title>2D Chess – Real Moves</title>
 
 <style>
-#chess-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
 #board {
-  display: grid;
-  grid-template-columns: repeat(8, 60px);
-  grid-template-rows: repeat(8, 60px);
-  border: 3px solid #00ffff;
+  display:grid;
+  grid-template-columns:repeat(8,60px);
+  border:3px solid cyan;
 }
-
 .square {
-  width: 60px;
-  height: 60px;
-  font-size: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  width:60px;
+  height:60px;
+  font-size:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
 }
-
-.white { background: #f0d9b5; }
-.black { background: #b58863; }
-
-.selected {
-  outline: 3px solid cyan;
-}
-
-#controls {
-  text-align: center;
-  margin-top: 10px;
-}
-button {
-  padding: 6px 14px;
-  background: cyan;
-  border: none;
-  border-radius: 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
+.light {background:#f0d9b5}
+.dark {background:#b58863}
+.valid {background:#66ffff !important}
 </style>
 </head>
 
 <body>
 
-<div id="chess-container">
+<div style="display:flex;justify-content:center;margin-top:20px">
   <div id="board"></div>
 </div>
 
-<div id="controls">
+<div style="text-align:center;margin-top:10px">
   <button onclick="restart()">Restart</button>
-  <button onclick="toggleAI()">AI: OFF</button>
 </div>
 
 <script>
-const boardElement = document.getElementById("board");
-let selected = null;
-let turn = "white";
-let aiEnabled = false;
+const boardEl=document.getElementById("board");
+let selected=null;
+let turn="white";
 
-const pieces = {
-  r:"♜", n:"♞", b:"♝", q:"♛", k:"♚", p:"♟",
-  R:"♖", N:"♘", B:"♗", Q:"♕", K:"♔", P:"♙"
+const P={
+ r:"♜",n:"♞",b:"♝",q:"♛",k:"♚",p:"♟",
+ R:"♖",N:"♘",B:"♗",Q:"♕",K:"♔",P:"♙"
 };
 
-let board = [];
+let board=[];
 
-function setupBoard() {
-  board = [
-    "rnbqkbnr",
-    "pppppppp",
-    "........",
-    "........",
-    "........",
-    "........",
-    "PPPPPPPP",
-    "RNBQKBNR"
-  ];
+function restart(){
+ board=[
+  "rnbqkbnr",
+  "pppppppp",
+  "........",
+  "........",
+  "........",
+  "........",
+  "PPPPPPPP",
+  "RNBQKBNR"
+ ];
+ turn="white";
+ draw();
 }
 
-function draw() {
-  boardElement.innerHTML = "";
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
-      const sq = document.createElement("div");
-      sq.className = "square " + ((r + c) % 2 ? "black" : "white");
-      const piece = board[r][c];
-      if (piece !== ".") sq.textContent = pieces[piece];
-      sq.onclick = () => clickSquare(r, c);
-      boardElement.appendChild(sq);
-    }
+function draw(valid=[]){
+ boardEl.innerHTML="";
+ for(let r=0;r<8;r++){
+  for(let c=0;c<8;c++){
+   const d=document.createElement("div");
+   d.className="square "+((r+c)%2?"dark":"light");
+   if(valid.some(v=>v.r===r&&v.c===c)) d.classList.add("valid");
+   const p=board[r][c];
+   if(p!=".") d.textContent=P[p];
+   d.onclick=()=>click(r,c);
+   boardEl.appendChild(d);
   }
+ }
 }
 
-function clickSquare(r, c) {
-  const piece = board[r][c];
-
-  if (selected) {
-    move(selected.r, selected.c, r, c);
-    selected = null;
-    draw();
-    if (aiEnabled && turn === "black") setTimeout(aiMove, 400);
-  } else {
-    if (piece !== "." && isTurnPiece(piece)) {
-      selected = { r, c };
-    }
+function click(r,c){
+ const p=board[r][c];
+ if(selected){
+  const moves=getMoves(selected.r,selected.c);
+  if(moves.some(m=>m.r===r&&m.c===c)){
+   move(selected.r,selected.c,r,c);
+   turn=turn==="white"?"black":"white";
   }
-}
-
-function move(r1, c1, r2, c2) {
-  board[r2] = replace(board[r2], c2, board[r1][c1]);
-  board[r1] = replace(board[r1], c1, ".");
-  turn = turn === "white" ? "black" : "white";
-}
-
-function replace(str, idx, chr) {
-  return str.substring(0, idx) + chr + str.substring(idx + 1);
-}
-
-function isTurnPiece(p) {
-  return turn === "white" ? p === p.toUpperCase() : p === p.toLowerCase();
-}
-
-/* ---------- SIMPLE AI ---------- */
-function aiMove() {
-  let moves = [];
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
-      if (board[r][c] !== "." && board[r][c] === board[r][c].toLowerCase()) {
-        if (r + 1 < 8) moves.push({ r1:r, c1:c, r2:r+1, c2:c });
-      }
-    }
-  }
-  if (moves.length) {
-    const m = moves[Math.floor(Math.random() * moves.length)];
-    move(m.r1, m.c1, m.r2, m.c2);
-    draw();
-  }
-}
-
-/* ---------- CONTROLS ---------- */
-function restart() {
-  setupBoard();
-  turn = "white";
+  selected=null;
   draw();
+ }else if(p!="."&&isTurn(p)){
+  selected={r,c};
+  draw(getMoves(r,c));
+ }
 }
 
-function toggleAI() {
-  aiEnabled = !aiEnabled;
-  event.target.textContent = "AI: " + (aiEnabled ? "ON" : "OFF");
+function move(r1,c1,r2,c2){
+ board[r2]=set(board[r2],c2,board[r1][c1]);
+ board[r1]=set(board[r1],c1,".");
 }
 
-/* INIT */
-setupBoard();
-draw();
+function set(s,i,v){return s.slice(0,i)+v+s.slice(i+1)}
+function isTurn(p){return turn==="white"?p===p.toUpperCase():p===p.toLowerCase()}
+function enemy(p){return turn==="white"?p===p.toLowerCase():p===p.toUpperCase()}
+
+/* ===== REAL CHESS MOVES ===== */
+function getMoves(r,c){
+ const p=board[r][c];
+ let m=[];
+ const dir=p==="P"?-1:p==="p"?1:0;
+
+ if(p.toLowerCase()=="p"){
+  if(board[r+dir]?.[c]==".") m.push({r:r+dir,c});
+  if((r==6||r==1)&&board[r+dir]?.[c]=="."&&board[r+2*dir]?.[c]==".")
+    m.push({r:r+2*dir,c});
+  [-1,1].forEach(dc=>{
+   if(board[r+dir]?.[c+dc]!="."&&enemy(board[r+dir]?.[c+dc]))
+    m.push({r:r+dir,c:c+dc});
+  });
+ }
+
+ if("rbq".includes(p.toLowerCase())){
+  const dirs=[];
+  if("rq".includes(p.toLowerCase())) dirs.push([1,0],[-1,0],[0,1],[0,-1]);
+  if("bq".includes(p.toLowerCase())) dirs.push([1,1],[1,-1],[-1,1],[-1,-1]);
+  dirs.forEach(d=>{
+   let nr=r+d[0],nc=c+d[1];
+   while(board[nr]?.[nc]!=null){
+    if(board[nr][nc]==".") m.push({r:nr,c:nc});
+    else{ if(enemy(board[nr][nc])) m.push({r:nr,c:nc}); break;}
+    nr+=d[0]; nc+=d[1];
+   }
+  });
+ }
+
+ if(p.toLowerCase()=="n"){
+  [[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]]
+  .forEach(d=>{
+   const nr=r+d[0],nc=c+d[1];
+   if(board[nr]?.[nc]!=null&&(board[nr][nc]=="."||enemy(board[nr][nc])))
+    m.push({r:nr,c:nc});
+  });
+ }
+
+ if(p.toLowerCase()=="k"){
+  for(let dr=-1;dr<=1;dr++)
+   for(let dc=-1;dc<=1;dc++){
+    if(dr||dc){
+     const nr=r+dr,nc=c+dc;
+     if(board[nr]?.[nc]!=null&&(board[nr][nc]=="."||enemy(board[nr][nc])))
+      m.push({r:nr,c:nc});
+    }
+   }
+ }
+
+ return m;
+}
+
+restart();
 </script>
-
 </body>
 </html>
-
