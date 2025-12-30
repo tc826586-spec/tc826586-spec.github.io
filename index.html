@@ -1,938 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Gaming Adda</title>
-
-  <style>
-/* ===== GAMING ANIMATIONS ===== */
-body {
-  background: radial-gradient(circle at top, #0b1220, #000);
-  overflow-x: hidden;
-}
-
-/* Page Entry */
-.page-enter {
-  animation: pageIn 1.2s ease-out forwards;
-}
-@keyframes pageIn {
-  from { opacity: 0; transform: scale(1.05); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* Glow Buttons */
-button, .play-btn {
-  position: relative;
-  overflow: hidden;
-}
-button::after, .play-btn::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, rgba(0,255,255,.4), transparent);
-  opacity: 0;
-  transition: .4s;
-}
-button:hover::after {
-  opacity: 1;
-}
-
-/* Game Card Hover */
-.game-card {
-  transition: transform .4s, box-shadow .4s;
-}
-.game-card:hover {
-  transform: translateY(-10px) scale(1.05);
-  box-shadow: 0 0 30px rgba(0,255,255,.6);
-}
-
-/* Floating Animation */
-.float {
-  animation: float 4s ease-in-out infinite;
-}
-@keyframes float {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-/* Fade-in on scroll */
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: 1s;
-}
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Background Particles */
-#particles {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-}
-</style>
-  
-<style>
-/* ===== ENTRY SCREEN ===== */
-#entryScreen {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at top, #050b2e, #000);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 99999;
-  overflow: hidden;
-  animation: slideUp 1.2s ease forwards;
-  animation-delay: 4.5s;
-}
-
-.entry-box {
-  text-align: center;
-  color: white;
-  animation: fadeIn 1.2s ease forwards;
-}
-
-.logo {
-  font-size: 70px;
-  animation: glow 1.5s infinite alternate;
-}
-
-.title {
-  font-size: 48px;
-  margin-top: 15px;
-  letter-spacing: 2px;
-  animation: typing 2.5s steps(12) forwards;
-  white-space: nowrap;
-  overflow: hidden;
-  border-right: 3px solid cyan;
-  width: 0;
-}
-
-.loading {
-  width: 260px;
-  height: 6px;
-  background: #222;
-  margin: 30px auto;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.loading span {
-  display: block;
-  height: 100%;
-  width: 0;
-  background: linear-gradient(90deg, cyan, lime);
-  animation: loadBar 3s forwards;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes glow {
-  from { text-shadow: 0 0 10px cyan; }
-  to { text-shadow: 0 0 25px cyan, 0 0 40px blue; }
-}
-
-@keyframes typing {
-  to { width: 12ch; }
-}
-
-@keyframes loadBar {
-  to { width: 100%; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes slideUp {
-  to { transform: translateY(-100%); }
-}
-</style>
-</head>
-  
-<canvas id="bgParticles"></canvas>
-
-<script>
-const canvas = document.getElementById("bgParticles");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let particles = [];
-for (let i = 0; i < 80; i++) {
-  particles.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    r: Math.random() * 2 + 1,
-    dx: Math.random() * 0.5,
-    dy: Math.random() * 0.5
-  });
-}
-
-function animate() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = "#00ffff";
-    ctx.fill();
-    p.x += p.dx;
-    p.y += p.dy;
-    if (p.x > canvas.width || p.y > canvas.height) {
-      p.x = 0; p.y = Math.random() * canvas.height;
-    }
-  });
-  requestAnimationFrame(animate);
-}
-animate();
-</script>
-
-<style>
-#bgParticles{
-  position: fixed;
-  top:0;
-  left:0;
-  z-index:-1;
-}
-</style>
-
-  <audio id="hoverSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
-
-<script>
-document.querySelectorAll("button, .play-btn").forEach(el=>{
-  el.addEventListener("mouseenter",()=>{
-    document.getElementById("hoverSound").play();
-  });
-});
-</script>
-
-  <div id="pageLoader"></div>
-
-<style>
-#pageLoader{
-  position:fixed;
-  inset:0;
-  background:#000;
-  z-index:9999;
-  display:none;
-}
-</style>
-
-<script>
-document.querySelectorAll("a").forEach(link=>{
-  link.onclick = ()=>{
-    document.getElementById("pageLoader").style.display="block";
-  }
-});
-</script>
-
-  <script>
-// ===== PARTICLE BACKGROUND =====
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-
-let particles = Array.from({length:80}, () => ({
-  x: Math.random()*canvas.width,
-  y: Math.random()*canvas.height,
-  r: Math.random()*2+1,
-  dx:(Math.random()-.5)*0.6,
-  dy:(Math.random()-.5)*0.6
-}));
-
-function animateParticles(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle="rgba(0,255,255,.6)";
-  particles.forEach(p=>{
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fill();
-    p.x+=p.dx; p.y+=p.dy;
-    if(p.x<0||p.x>canvas.width) p.dx*=-1;
-    if(p.y<0||p.y>canvas.height) p.dy*=-1;
-  });
-  requestAnimationFrame(animateParticles);
-}
-animateParticles();
-
-// ===== SCROLL REVEAL =====
-window.addEventListener("scroll",()=>{
-  document.querySelectorAll(".reveal").forEach(el=>{
-    if(el.getBoundingClientRect().top < innerHeight-100){
-      el.classList.add("active");
-    }
-  });
-});
-
-// Page entry
-document.body.classList.add("page-enter");
-</script>
-
-<body>
-
-  <canvas id="particles"></canvas>
-
-<!-- ENTRY ANIMATION -->
-<div id="entryScreen">
-  <div class="entry-box">
-    <div class="logo">🎮</div>
-    <div class="title">Gaming Adda</div>
-    <div class="loading"><span></span></div>
-  </div>
-</div>
-
-<script>
-setTimeout(() => {
-  document.getElementById("entryScreen").style.display = "none";
-}, 5800);
-</script>
-  
-<div class="live-count">🔥 Players Online: <span id="players"></span></div>
-
-<script>
-let count = 124;
-setInterval(()=>{
-  count += Math.floor(Math.random()*3);
-  document.getElementById("players").innerText = count;
-},2000);
-</script>
-
-<style>
-.live-count{
-  color:#00ffff;
-  font-weight:bold;
-  text-align:center;
-  margin-top:15px;
-}
-</style>
-
-  <div id="achievement">🏆 Welcome Gamer!</div>
-
-<style>
-#achievement{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#00ffff;
-  color:#000;
-  padding:10px 20px;
-  border-radius:20px;
-  display:none;
-}
-</style>
-
-<script>
-setTimeout(()=>{
-  document.getElementById("achievement").style.display="block";
-  setTimeout(()=>{document.getElementById("achievement").style.display="none"},3000);
-},5000);
-</script>
-
-<!-- ===== YOUR EXISTING WEBSITE STARTS BELOW ===== -->
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaming Adda – Play Games</title>
+<title>Gaming Adda</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+
 body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:linear-gradient(180deg,#0b102c,#000);
+  background:radial-gradient(circle at top,#0ff,#020617 40%);
   color:#fff;
+  overflow-x:hidden;
 }
 
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-XXXXXXXXXX"
-     data-ad-slot="YYYYYYYYY"
-     data-ad-format="auto"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-  
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3278025401135303"
-     crossorigin="anonymous"></script>
-  
-/* NAV */
-nav{
+/* ===== ENTRY ANIMATION ===== */
+#entryScreen{
+  position:fixed;
+  inset:0;
+  background:#020617;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  animation:hideEntry 1.2s ease forwards;
+  animation-delay:3s;
+}
+
+@keyframes hideEntry{
+  to{opacity:0;visibility:hidden}
+}
+
+.entry-box{
+  text-align:center;
+  animation:pop 1.5s ease;
+}
+
+@keyframes pop{
+  0%{transform:scale(.6);opacity:0}
+  100%{transform:scale(1);opacity:1}
+}
+
+.entry-box h1{
+  font-size:50px;
+  color:#00f7ff;
+  text-shadow:0 0 20px cyan;
+}
+
+/* ===== HEADER ===== */
+header{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  padding:15px 30px;
+  padding:20px 30px;
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(8px);
 }
-nav h2{color:#00eaff}
+
 nav a{
   color:#fff;
-  text-decoration:none;
   margin-left:20px;
+  text-decoration:none;
+  font-weight:bold;
 }
 
-/* HERO */
+/* ===== HERO ===== */
 .hero{
   text-align:center;
-  padding:80px 20px;
+  padding:90px 20px;
 }
-.hero h1{font-size:3rem}
-.hero p{opacity:.8;margin:10px 0 25px}
-.hero button{
-  padding:14px 30px;
-  background:#00eaff;
+
+.hero h2{
+  font-size:44px;
+}
+
+.hero p{
+  margin-top:10px;
+  opacity:.8;
+}
+
+.btn{
+  margin-top:30px;
+  padding:14px 32px;
   border:none;
   border-radius:25px;
-  font-weight:bold;
+  background:#00f7ff;
+  color:#000;
+  font-size:16px;
   cursor:pointer;
+  box-shadow:0 0 15px cyan;
 }
 
-/* TITLES */
-.section-title{
-  text-align:center;
-  margin:40px 0 20px;
-  font-size:1.7rem;
+/* ===== GAMES ===== */
+section{
+  padding:60px 30px;
 }
 
-/* GRID */
-.games-grid{
-  max-width:1200px;
-  margin:auto;
-  padding:0 20px;
+h3{
+  font-size:32px;
+  margin-bottom:20px;
+}
+
+.games{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:25px;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
 }
 
-.game-card{
-  background:#111827;
-  border-radius:18px;
-  padding:15px;
+.card{
+  background:rgba(255,255,255,.05);
+  border-radius:16px;
+  padding:20px;
   text-align:center;
   transition:.3s;
 }
-.game-card:hover{
-  transform:translateY(-6px);
-  box-shadow:0 0 30px #00eaff;
+
+.card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 0 20px cyan;
 }
-.game-card img{
-  width:100%;
-  height:160px;
-  object-fit:cover;
-  border-radius:14px;
-}
-.game-card h3{margin:12px 0}
-.game-card button{
-  background:#00eaff;
+
+.card button{
+  margin-top:15px;
+  padding:10px 20px;
   border:none;
-  padding:9px 20px;
   border-radius:20px;
-  font-weight:bold;
+  background:#00f7ff;
   cursor:pointer;
 }
 
-/* GAME MODAL */
-#gameModal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.9);
-  display:none;
-  z-index:999;
-}
-#gameBox{
-  width:90%;
-  height:90%;
-  margin:3% auto;
-  background:#000;
-  border-radius:16px;
-  overflow:hidden;
-  position:relative;
-}
-#gameBox iframe{
-  width:100%;
-  height:100%;
-  border:none;
-}
-#closeBtn{
-  position:absolute;
-  top:10px;
-  right:15px;
-  background:#00eaff;
-  border:none;
-  padding:6px 14px;
-  border-radius:20px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-/* FOOTER */
+/* ===== FOOTER ===== */
 footer{
+  background:#000;
+  padding:20px;
   text-align:center;
-  margin:50px 0;
-  opacity:.6;
+  font-size:14px;
 }
 
-/* MOBILE */
-@media(max-width:600px){
-  .hero h1{font-size:2.2rem}
+footer a{
+  color:#00f7ff;
+  margin:0 10px;
+  text-decoration:none;
 }
 </style>
 </head>
 
 <body>
 
-<nav>
-  <h2>🎮 Gaming Adda</h2>
-  <div>
-    <a href="#">Home</a>
-    <a href="#free">Free Games</a>
-    <a href="#buy">Buy Games</a>
+<!-- ENTRY SCREEN -->
+<div id="entryScreen">
+  <div class="entry-box">
+    <h1>🎮 Gaming Adda</h1>
+    <p>Loading awesome games...</p>
   </div>
-</nav>
+</div>
+
+<header>
+  <h2>🎮 Gaming Adda</h2>
+  <nav>
+    <a href="#free">Free Games</a>
+    <a href="#3d">3D Games</a>
+    <a href="#legal">Legal</a>
+  </nav>
+</header>
 
 <div class="hero">
-  <h1>Play & Buy Your Favourite Games</h1>
-  <p>Play free games or buy premium games directly</p>
-  <button onclick="scrollToFree()">Start Playing</button>
+  <h2>Play & Enjoy Modern Games</h2>
+  <p>No downloads • No risk • Fully safe</p>
+  <button class="btn">Start Playing</button>
 </div>
 
-<h2 id="free" class="section-title">🎯 Free Games</h2>
-
-  <div class="games-grid">
-
-  <!-- FIGHTING GAME -->
-  <div class="game-card">
-    <img src="assets/fighting.png" alt="Fighting Game">
-    <h3>Stickman Fighter</h3>
-    <p>Fast 2D arcade fighting</p>
-    <a href="games/fighting.html" class="play-btn">Play</a>
-    <a href="downloads/stickman-fighter.zip" class="download-btn">⬇ Download</a>
+<section id="free">
+  <h3>🔥 Free Games</h3>
+  <div class="games">
+    <div class="card">
+      <h4>Snake 2D</h4>
+      <p>Classic arcade fun</p>
+      <button onclick="alert('Game opens here')">Play</button>
+    </div>
+    <div class="card">
+      <h4>2048</h4>
+      <p>Mind puzzle game</p>
+      <button onclick="alert('Game opens here')">Play</button>
+    </div>
+    <div class="card">
+      <h4>Chess 2D</h4>
+      <p>Legal moves supported</p>
+      <button onclick="alert('Chess loads')">Play</button>
+    </div>
   </div>
+</section>
 
-  <!-- ADVENTURE GAME -->
-  <div class="game-card">
-    <img src="assets/adventure.png" alt="Adventure Game">
-    <h3>Treasure Quest</h3>
-    <p>Explore & collect treasures</p>
-    <a href="games/adventure.html" class="play-btn">Play</a>
-    <a href="downloads/treasure-quest.zip" class="download-btn">⬇ Download</a>
+<section id="3d">
+  <h3>🚀 3D Animated Games</h3>
+  <div class="games">
+    <div class="card">
+      <h4>3D Runner</h4>
+      <p>Stylized & animated</p>
+      <button>Play Online</button>
+    </div>
+    <div class="card">
+      <h4>3D Adventure</h4>
+      <p>Cartoon world</p>
+      <button>Play Online</button>
+    </div>
+    <div class="card">
+      <h4>3D Fighting</h4>
+      <p>Arcade style</p>
+      <button>Play Online</button>
+    </div>
   </div>
+</section>
 
-  <!-- RACING GAME -->
-  <div class="game-card">
-    <img src="assets/racing.png" alt="Racing Game">
-    <h3>Mini Car Racer</h3>
-    <p>Top-down arcade racing</p>
-    <a href="games/racing.html" class="play-btn">Play</a>
-    <a href="downloads/mini-racer.zip" class="download-btn">⬇ Download</a>
-  </div>
+<section id="legal">
+  <h3>📜 Legal</h3>
+  <p>
+    This website does not collect personal data.  
+    All games are browser-based demos for entertainment purposes only.  
+    No downloads, no installations, no malware.
+  </p>
+</section>
 
-  <!-- ACTION GAME -->
-  <div class="game-card">
-    <img src="assets/action.png" alt="Action Game">
-    <h3>Space Shooter</h3>
-    <p>Shoot enemies & survive</p>
-    <a href="games/action.html" class="play-btn">Play</a>
-    <a href="downloads/space-shooter.zip" class="download-btn">⬇ Download</a>
-  </div>
-
-  <!-- PUZZLE GAME -->
-  <div class="game-card">
-    <img src="assets/puzzle.png" alt="Puzzle Game">
-    <h3>Brain Puzzle</h3>
-    <p>Test your thinking power</p>
-    <a href="games/puzzle.html" class="play-btn">Play</a>
-    <a href="downloads/brain-puzzle.zip" class="download-btn">⬇ Download</a>
-  </div>
-
-  <!-- CASUAL GAME -->
-  <div class="game-card">
-    <img src="assets/casual.png" alt="Casual Game">
-    <h3>Tap Speed</h3>
-    <p>Tap as fast as you can</p>
-    <a href="games/casual.html" class="play-btn">Play</a>
-    <a href="downloads/tap-speed.zip" class="download-btn">⬇ Download</a>
-  </div>
-
-  </div>
-
-<div class="games-grid">
-
-  <div class="game-card">
-    <img src="images/Screenshot 2025-12-25 122350.png">
-    <h3>Chess</h3>
-    <button onclick="playGame('games/chess.html')">Play</button>
-  </div>
-
-  <div class="game-card">
-    <img src="images/images.jpg">
-    <h3>2048</h3>
-    <button onclick="playGame('games/2048.html')">Play</button>
-  </div>
-
-  <div class="game-card">
-    <img src="images/360_F_726345598_2bPzqF0v1e0zTInIw7rKqcyiOJkbh9Br.jpg">
-    <h3>Snake</h3>
-    <button onclick="playGame('games/snake.html')">Play</button>
-  </div>
-
-  <div class="game-card">
-  <img src="images/flappy-bird-7ueju.png">
-  <h3>Flappy Bird</h3>
-  <button onclick="playGame('games/flappy.html')">Play</button>
-</div>
-  
-<!-- ===== NEW MODERN GAMES (NO DESIGN CHANGE) ===== -->
-
-<div class="game-card">
-  <img src="https://i.imgur.com/zYz9FqG.png" alt="Fighting Game">
-  <h3>Street Fighter X</h3>
-  <p>🥊 Fighting</p>
-  <a href="games/fighting.html" class="play-btn">Play</button>
-</div>
-
-<div class="game-card">
-  <img src="https://i.imgur.com/1lQkZ6m.png" alt="Adventure Game">
-  <h3>Jungle Quest</h3>
-  <p>🗺️ Adventure</p>
-  <a href="games/adventure.html" class="play-btn">Play</a>
-</div>
-
-<div class="game-card">
-  <img src="https://i.imgur.com/7OZ1x7E.png" alt="Racing Game">
-  <h3>Speed Racer 3D</h3>
-  <p>🚗 Racing</p>
-  <a href="games/racing.html" class="play-btn">Play</a>
-</div>
-
-<div class="game-card">
-  <img src="https://i.imgur.com/YpQ9Y9A.png" alt="Shooter Game">
-  <h3>Pixel Shooter</h3>
-  <p>🔫 Action</p>
-  <a href="games/shooter.html" class="play-btn">Play</a>
-</div>
-
-<div class="game-card">
-  <img src="https://i.imgur.com/WQ8K9wS.png" alt="Fantasy Game">
-  <h3>Magic Realm</h3>
-  <p>🧙 Fantasy</p>
-  <a href="games/fantasy.html" class="play-btn">Play</a>
-</div>
-
-<div class="game-card">
-  <img src="https://i.imgur.com/8fZ3L6k.png" alt="Puzzle Game">
-  <h3>Brain Shift</h3>
-  <p>🧩 Puzzle</p>
-  <a href="games/puzzle.html" class="play-btn">Play</a>
-</div>
-
-<!-- ===== END NEW GAMES ===== -->
-
-  <!-- ✅ ADD NEW GAME CARD HERE -->
-</div>
-
-<h2 id="buy" class="section-title">💳 Buy Games</h2>
-
-<div class="games-grid">
-  <div class="game-card">
-    <img src="https://upload.wikimedia.org/wikipedia/en/a/a5/Grand_Theft_Auto_V.png">
-    <h3>GTA V</h3>
-    <button onclick="alert('Payment Coming Soon')">Buy ₹999</button>
-  </div>
-</div>
-
-<footer>© 2025 Gaming Adda | All Rights Reserved</footer>
-
-  <div style="text-align:center; padding:20px; font-size:14px;">
-  <a href="privacy.html">Privacy Policy</a> |
-  <a href="about.html">About Us</a> |
-  <a href="contact.html">Contact Us</a>
-</div>
-
-<!-- GAME MODAL -->
-<div id="gameModal">
-  <div id="gameBox">
-    <button id="closeBtn" onclick="closeGame()">Close ✖</button>
-    <iframe id="gameFrame"></iframe>
-  </div>
-</div>
-
-<script>
-function scrollToFree(){
-  document.getElementById("free").scrollIntoView({behavior:"smooth"});
-}
-function playGame(path){
-  document.getElementById("gameFrame").src = path;
-  document.getElementById("gameModal").style.display="block";
-}
-function closeGame(){
-  document.getElementById("gameFrame").src = "";
-  document.getElementById("gameModal").style.display="none";
-}
-</script>
-
-  <!-- ===== ENHANCEMENT LAYER (NO DESIGN CHANGE) ===== -->
-
-<style>
-/* Smooth animations */
-.game-card, button {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.game-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-}
-button:hover {
-  transform: scale(1.05);
-}
-
-/* Dark / Light Toggle */
-.theme-toggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #00ffff;
-  color: #000;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 14px;
-  font-weight: bold;
-  cursor: pointer;
-  z-index: 9999;
-}
-
-/* Game Preview Modal */
-.preview-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 99999;
-}
-.preview-box {
-  background: #111;
-  padding: 20px;
-  border-radius: 16px;
-  width: 300px;
-  text-align: center;
-}
-.preview-box img {
-  width: 100%;
-  border-radius: 12px;
-}
-.preview-box button {
-  margin-top: 12px;
-}
-
-/* Footer */
-.site-footer {
-  text-align: center;
-  padding: 20px;
-  font-size: 14px;
-  color: #aaa;
-}
-</style>
-
-<button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-
-<div class="preview-modal" id="previewModal">
-  <div class="preview-box">
-    <img id="previewImg">
-    <h3 id="previewTitle"></h3>
-    <button onclick="startGame()">Play Now</button>
-    <br><br>
-    <button onclick="closePreview()">Close</button>
-  </div>
-</div>
-
-<footer class="site-footer">
+<footer>
   © 2025 Gaming Adda |
-  <a href="#" style="color:#0ff">Privacy</a> |
-  <a href="#" style="color:#0ff">Terms</a> |
-  <a href="#" style="color:#0ff">Contact</a>
+  <a href="#">Privacy Policy</a> |
+  <a href="#">Disclaimer</a>
 </footer>
-
-<script>
-let currentGameURL = "";
-
-/* Preview before play */
-document.querySelectorAll(".play-btn").forEach(btn => {
-  btn.addEventListener("click", e => {
-    e.preventDefault();
-    const card = btn.closest(".game-card");
-    document.getElementById("previewTitle").innerText =
-      card.querySelector("h3").innerText;
-    document.getElementById("previewImg").src =
-      card.querySelector("img").src;
-    currentGameURL = btn.href;
-    document.getElementById("previewModal").style.display = "flex";
-  });
-});
-
-function startGame() {
-  window.location.href = currentGameURL;
-}
-
-function closePreview() {
-  document.getElementById("previewModal").style.display = "none";
-}
-
-/* Dark / Light */
-function toggleTheme() {
-  document.body.classList.toggle("light-mode");
-}
-
-/* Recent Played Games */
-function saveRecent(game) {
-  let games = JSON.parse(localStorage.getItem("recentGames")) || [];
-  games.unshift(game);
-  games = games.slice(0, 5);
-  localStorage.setItem("recentGames", JSON.stringify(games));
-}
-</script>
-
-<!-- ===== END ENHANCEMENT ===== -->
-
-  <!-- ====== NEW VISIBLE FEATURES START ====== -->
-
-<style>
-/* Search bar */
-#gameSearch {
-  width: 280px;
-  padding: 12px 16px;
-  border-radius: 25px;
-  border: none;
-  outline: none;
-  margin: 30px auto;
-  display: block;
-  font-size: 15px;
-}
-
-/* Badge */
-.badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: gold;
-  color: #000;
-  padding: 4px 8px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-/* Toast */
-.toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #00ffff;
-  color: #000;
-  padding: 14px 18px;
-  border-radius: 14px;
-  font-weight: bold;
-  display: none;
-  z-index: 9999;
-}
-
-/* Stats */
-.stats {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin: 40px 0;
-  text-align: center;
-}
-.stat-box {
-  background: rgba(255,255,255,0.06);
-  padding: 20px;
-  border-radius: 18px;
-  width: 140px;
-}
-.stat-box h2 {
-  color: #00ffff;
-}
-
-/* Scroll Top */
-#topBtn {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: #00ffff;
-  color: #000;
-  border: none;
-  border-radius: 50%;
-  padding: 14px 16px;
-  font-size: 18px;
-  cursor: pointer;
-  display: none;
-}
-</style>
-
-<!-- Search -->
-<input type="text" id="gameSearch" placeholder="🔍 Search games..." />
-
-<!-- Stats -->
-<div class="stats">
-  <div class="stat-box">
-    <h2>4+</h2>
-    <p>Games</p>
-  </div>
-  <div class="stat-box">
-    <h2>1K+</h2>
-    <p>Players</p>
-  </div>
-  <div class="stat-box">
-    <h2>5K+</h2>
-    <p>Plays</p>
-  </div>
-</div>
-
-<div class="toast" id="toast">🎮 Welcome to Gaming Adda!</div>
-<button id="topBtn" onclick="scrollToTop()">⬆</button>
-
-<script>
-/* Toast */
-window.onload = () => {
-  const t = document.getElementById("toast");
-  t.style.display = "block";
-  setTimeout(() => t.style.display = "none", 3000);
-};
-
-/* Search filter */
-document.getElementById("gameSearch").addEventListener("keyup", function () {
-  const val = this.value.toLowerCase();
-  document.querySelectorAll(".game-card").forEach(card => {
-    const name = card.innerText.toLowerCase();
-    card.style.display = name.includes(val) ? "block" : "none";
-  });
-});
-
-/* Add Trending badge */
-document.querySelectorAll(".game-card")[0]?.insertAdjacentHTML(
-  "afterbegin",
-  '<div class="badge">🔥 Popular</div>'
-);
-
-/* Scroll button */
-window.onscroll = () => {
-  document.getElementById("topBtn").style.display =
-    document.documentElement.scrollTop > 200 ? "block" : "none";
-};
-
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-</script>
-
-<!-- ====== NEW VISIBLE FEATURES END ====== -->
 
 </body>
 </html>
